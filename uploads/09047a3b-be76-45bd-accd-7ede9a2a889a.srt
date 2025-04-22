@@ -1,0 +1,19 @@
+1
+00:00:00,000 --> 00:00:04,000
+SPEAKER_01:  So, Erin, in your email you said you wanted to talk about the exam.
+
+2
+00:00:04,940 --> 00:00:09,439
+SPEAKER_00:  Yeah, um, I've just never taken a class with so many different readings.
+
+3
+00:00:09,880 --> 00:00:15,860
+SPEAKER_00:  I've managed to keep up with all the assignments, but I'm not sure how to... how to...
+
+4
+00:00:15,860 --> 00:00:17,820
+SPEAKER_02:  How to review everything?
+
+5
+00:00:18,420 --> 00:00:26,940
+SPEAKER_00:  Yeah. In other classes I've had, there's usually just one book to review, not three different books, plus all those other text excerpts and videos.

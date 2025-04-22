@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+
+{% block title %}Approval - VANI System{% endblock %}
+
+{% block header %}Review and Approve - {{ audio_file.originalFilename }}{% endblock %}
+
+{% block content %}
+<section class="actions">
+    <a href="/dashboard" class="button secondary">Back to Dashboard</a>
+    <a href="/download/{{ transcription.srtFilename }}" class="button primary">Download SRT</a>
+</section>
+
+<section class="file-details">
+    <h2>File Information</h2>
+    <div class="details-grid">
+        <div class="detail-item">
+            <span class="label">Original Filename:</span>
+            <span class="value">{{ audio_file.originalFilename }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="label">Upload Date:</span>
+            <span class="value">{{ audio_file.uploadDate }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="label">Submitted By:</span>
+            <span class="value">{{ uploader.name }} ({{ uploader.serviceNo }})</span>
+        </div>
+        <div class="detail-item">
+            <span class="label">Unit:</span>
+            <span class="value">{{ uploader.unit }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="label">Status:</span>
+            <span class="value status {{ audio_file.status }}">
+                {% if audio_file.status == 'submitted_fltcdr' %}
+                    Awaiting Flight Commander Approval
+                {% elif audio_file.status == 'submitted_co' %}
+                    Awaiting CO Approval
+                {% else %}
+                    {{ audio_file.status }}
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</section>
+
+<section class="approval-actions">
+    <h2>Approval Decision</h2>
+    <div class="approval-buttons">
+        <form action="/approve/{{ audio_file.id }}" method="post" class="approve-form">
+            <div class="form-group">
+                <label for="approve-comments">Comments (Optional):</label>
+                <textarea id="approve-comments" name="comments" rows="3" placeholder="Add any comments or feedback"></textarea>
+            </div>
+            
+            {% if user.isFltCdr and audio_file.status == 'submitted_fltcdr' %}
+            <div class="form-group">
+                <label for="forward-co-checkbox">
+                    <input type="checkbox" id="forward-co-checkbox" name="forward_to_co" value="1">
+                    Forward to Commanding Officer after approval
+                </label>
+            </div>
+            
+            <div class="form-group" id="co-select-group" style="display: none;">
+                <label for="co-select">Select Commanding Officer:</label>
+                <select id="co-select" name="co_service_no" disabled>
+                    {% for co in available_cos %}
+                    <option value="{{ co.serviceNo }}">{{ co.name }} ({{ co.serviceNo }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            
+            <button type="submit" class="button success">Approve</button>
+        </form>
+        
+        <form action="/reject/{{ audio_file.id }}" method="post" class="reject-form">
+            <div class="form-group">
+                <label for="reject-comments">Rejection Reason (Required):</label>
+                <textarea id="reject-comments" name="comments" rows="3" placeholder="Please provide reasons for rejection" required></textarea>
+            </div>
+            <button type="submit" class="button error">Reject</button>
+        </form>
+    </div>
+</section>
+
+<section class="transcription-results">
+    <h2>Transcription with Speaker Diarization</h2>
+    
+    <div class="transcription-container">
+        {% if transcription and transcription.segments %}
+            <div class="speaker-filter">
+                <label for="filter-speaker">Filter by Speaker:</label>
+                <select id="filter-speaker">
+                    <option value="all">All Speakers</option>
+                    {% set speakers = [] %}
+                    {% for segment in transcription.segments %}
+                        {% if segment.speaker not in speakers %}
+                            {% set _ = speakers.append(segment.speaker) %}
+                            <option value="{{ segment.speaker }}">{{ segment.speaker }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="speaker-timeline">
+                {% set speakers = [] %}
+                {% for segment in transcription.segments %}
+                    {% if segment.speaker not in speakers %}
+                        {% set _ = speakers.append(segment.speaker) %}
+                    {% endif %}
+                {% endfor %}
+                
+                <div class="timeline-header">
+                    <div class="timeline-scale">
+                        {% set total_duration = transcription.segments[-1].end_time if transcription.segments else 0 %}
+                        <div class="timeline-markers">
+                            {% for i in range(0, (total_duration|int) + 1, 30) %}
+                                <div class="time-marker" style="left: {{ (i / total_duration * 100) if total_duration > 0 else 0 }}%">
+                                    {{ "%02d:%02d"|format(i // 60, i % 60) }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                {% for speaker in speakers %}
+                <div class="speaker-row" data-speaker="{{ speaker }}">
+                    <div class="speaker-label">{{ speaker }}</div>
+                    <div class="speaker-segments">
+                        {% for segment in transcription.segments %}
+                            {% if segment.speaker == speaker %}
+                                {% set total_duration = transcription.segments[-1].end_time if transcription.segments else 0 %}
+                                {% set segment_left = (segment.start_time / total_duration * 100) if total_duration > 0 else 0 %}
+                                {% set segment_width = ((segment.end_time - segment.start_time) / total_duration * 100) if total_duration > 0 else 0 %}
+                                <div class="timeline-segment" 
+                                     style="left: {{ segment_left }}%; width: {{ segment_width }}%;"
+                                     data-start="{{ segment.start_time }}"
+                                     data-end="{{ segment.end_time }}"
+                                     data-text="{{ segment.text }}"
+                                     onclick="highlightSegment('{{ segment.start_time }}', '{{ segment.end_time }}')">
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="segment-list">
+                {% for segment in transcription.segments %}
+                    <div class="segment" data-speaker="{{ segment.speaker }}" id="segment-{{ segment.start_time|replace('.', '-') }}">
+                        <div class="segment-header">
+                            <span class="speaker-tag">{{ segment.speaker }}</span>
+                            <span class="timestamp">{{ "%02d:%02d"|format(segment.start_time // 60, segment.start_time % 60) }} - {{ "%02d:%02d"|format(segment.end_time // 60, segment.end_time % 60) }}</span>
+                        </div>
+                        <div class="segment-text">{{ segment.text }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-results">No transcription segments found.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block head %}
+<style>
+    .speaker-filter {
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #f0f7ff;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+    }
+    
+    .speaker-filter label {
+        margin-right: 10px;
+        font-weight: bold;
+    }
+    
+    .speaker-filter select {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    
+    .speaker-timeline {
+        margin-bottom: 30px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        padding: 10px;
+        background-color: #f9f9f9;
+    }
+    
+    .timeline-header {
+        height: 30px;
+        position: relative;
+        margin-bottom: 10px;
+    }
+    
+    .timeline-scale {
+        position: relative;
+        height: 20px;
+        margin-left: 120px; /* Space for speaker labels */
+    }
+    
+    .timeline-markers {
+        position: relative;
+        height: 100%;
+        border-bottom: 1px solid #ccc;
+    }
+    
+    .time-marker {
+        position: absolute;
+        font-size: 10px;
+        top: -15px;
+        transform: translateX(-50%);
+        color: #666;
+    }
+    
+    .time-marker::after {
+        content: '';
+        position: absolute;
+        height: 5px;
+        width: 1px;
+        background-color: #ccc;
+        bottom: -6px;
+        left: 50%;
+    }
+    
+    .speaker-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        height: 30px;
+    }
+    
+    .speaker-label {
+        width: 120px;
+        padding-right: 10px;
+        text-align: right;
+        font-weight: bold;
+        color: var(--secondary-color);
+    }
+    
+    .speaker-segments {
+        flex-grow: 1;
+        height: 20px;
+        position: relative;
+        background-color: #eee;
+        border-radius: 3px;
+    }
+    
+    .timeline-segment {
+        position: absolute;
+        height: 100%;
+        background-color: var(--accent-color);
+        border-radius: 3px;
+        opacity: 0.8;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+    
+    .timeline-segment:hover {
+        opacity: 1;
+    }
+    
+    .segment.highlight {
+        border-left-color: #ff9800;
+        background-color: #fff8e1;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Speaker filter functionality
+        const filterSelect = document.getElementById('filter-speaker');
+        if (filterSelect) {
+            filterSelect.addEventListener('change', function() {
+                const selectedSpeaker = this.value;
+                const segments = document.querySelectorAll('.segment');
+                const speakerRows = document.querySelectorAll('.speaker-row');
+                
+                segments.forEach(segment => {
+                    if (selectedSpeaker === 'all' || segment.dataset.speaker === selectedSpeaker) {
+                        segment.style.display = 'block';
+                    } else {
+                        segment.style.display = 'none';
+                    }
+                });
+                
+                speakerRows.forEach(row => {
+                    if (selectedSpeaker === 'all' || row.dataset.speaker === selectedSpeaker) {
+                        row.style.display = 'flex';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Handle forward to CO checkbox
+        const forwardCheckbox = document.getElementById('forward-co-checkbox');
+        const coSelectGroup = document.getElementById('co-select-group');
+        const coSelect = document.getElementById('co-select');
+        
+        if (forwardCheckbox && coSelectGroup && coSelect) {
+            forwardCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    coSelectGroup.style.display = 'block';
+                    coSelect.disabled = false;
+                    coSelect.required = true;
+                } else {
+                    coSelectGroup.style.display = 'none';
+                    coSelect.disabled = true;
+                    coSelect.required = false;
+                }
+            });
+        }
+    });
+    
+    // Function to highlight a segment when clicked in the timeline
+    function highlightSegment(startTime, endTime) {
+        // Remove highlight from all segments
+        document.querySelectorAll('.segment').forEach(segment => {
+            segment.classList.remove('highlight');
+        });
+        
+        // Add highlight to the selected segment
+        const segmentId = `segment-${startTime.replace('.', '-')}`;
+        const segment = document.getElementById(segmentId);
+        if (segment) {
+            segment.classList.add('highlight');
+            segment.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+</script>
+{% endblock %}

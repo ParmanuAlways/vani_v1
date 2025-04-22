@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}VANI - Audio Transcription System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/new-styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block head %}{% endblock %}
+</head>
+<body class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-icon"><i class="fas fa-microphone-alt"></i></span>
+                <span class="logo-text">VANI</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <div class="sidebar-content">
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="/dashboard" class="{% if request.url.path == '/dashboard' %}active{% endif %}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    {% if user.isPilot %}
+                    <li>
+                        <a href="/upload" class="{% if request.url.path == '/upload' %}active{% endif %}">
+                            <i class="fas fa-upload"></i>
+                            <span>Upload Audio</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% if user.isPilot or user.isFltCdr or user.isCO %}
+                    <li class="nav-section">
+                        <span class="nav-section-title">Transcriptions</span>
+                    </li>
+                    {% endif %}
+                    
+                    {% if user.isPilot %}
+                    <li>
+                        <a href="#" class="submenu-toggle {% if '/transcription/' in request.url.path %}open{% endif %}">
+                            <i class="fas fa-file-alt"></i>
+                            <span>My Transcriptions</span>
+                            <i class="fas fa-chevron-down submenu-icon"></i>
+                        </a>
+                        <ul class="submenu {% if '/transcription/' in request.url.path %}open{% endif %}">
+                            <li><a href="#" class="filter-link" data-status="all">All</a></li>
+                            <li><a href="#" class="filter-link" data-status="transcribed">Ready for Approval</a></li>
+                            <li><a href="#" class="filter-link" data-status="submitted">Pending Approval</a></li>
+                            <li><a href="#" class="filter-link" data-status="approved">Approved</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    
+                    {% if user.isFltCdr %}
+                    <li>
+                        <a href="#" class="submenu-toggle {% if '/approval/' in request.url.path %}open{% endif %}">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Approvals</span>
+                            <i class="fas fa-chevron-down submenu-icon"></i>
+                        </a>
+                        <ul class="submenu {% if '/approval/' in request.url.path %}open{% endif %}">
+                            <li><a href="#" class="filter-link" data-status="pending">Pending</a></li>
+                            <li><a href="#" class="filter-link" data-status="approved">Approved</a></li>
+                            <li><a href="#" class="filter-link" data-status="rejected">Rejected</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    
+                    {% if user.isCO %}
+                    <li>
+                        <a href="#" class="submenu-toggle {% if '/approval/' in request.url.path %}open{% endif %}">
+                            <i class="fas fa-stamp"></i>
+                            <span>CO Approvals</span>
+                            <i class="fas fa-chevron-down submenu-icon"></i>
+                        </a>
+                        <ul class="submenu {% if '/approval/' in request.url.path %}open{% endif %}">
+                            <li><a href="#" class="filter-link" data-status="pending">Pending</a></li>
+                            <li><a href="#" class="filter-link" data-status="approved">Approved</a></li>
+                            <li><a href="#" class="filter-link" data-status="rejected">Rejected</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    
+                    <li class="nav-section">
+                        <span class="nav-section-title">Settings</span>
+                    </li>
+                    <li>
+                        <a href="/logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-title">
+                <h1>{% block header %}VANI - Audio Transcription System{% endblock %}</h1>
+            </div>
+            
+            <div class="header-actions">
+                {% if user %}
+                <div class="user-dropdown">
+                    <button class="user-dropdown-toggle">
+                        <div class="user-avatar">
+                            <span>{{ user.name[0].upper() }}</span>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">{{ user.name }}</div>
+                            <div class="user-role">
+                                {% if user.isPilot %}Pilot{% endif %}
+                                {% if user.isFltCdr %}Flight Commander{% endif %}
+                                {% if user.isCO %}Commanding Officer{% endif %}
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <div class="user-name">{{ user.name }}</div>
+                                <div class="user-id">{{ user.serviceNo }}</div>
+                                <div class="user-unit">{{ user.unit }}</div>
+                            </div>
+                        </div>
+                        <ul class="dropdown-items">
+                            <li>
+                                <a href="/logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </header>
+        
+        <!-- Content Area -->
+        <div class="content-area">
+            {% if success %}
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> {{ success }}
+                <button class="alert-close" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            {% endif %}
+            
+            {% if error %}
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i> {{ error }}
+                <button class="alert-close" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            {% endif %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const body = document.body;
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    body.classList.toggle('sidebar-collapsed');
+                });
+            }
+            
+            // Submenu toggles
+            const submenuToggles = document.querySelectorAll('.submenu-toggle');
+            submenuToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.classList.toggle('open');
+                    const submenu = this.nextElementSibling;
+                    submenu.classList.toggle('open');
+                });
+            });
+            
+            // User dropdown
+            const userDropdown = document.querySelector('.user-dropdown-toggle');
+            if (userDropdown) {
+                userDropdown.addEventListener('click', function() {
+                    const dropdownMenu = document.querySelector('.user-dropdown-menu');
+                    dropdownMenu.classList.toggle('open');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    const dropdown = document.querySelector('.user-dropdown');
+                    if (dropdown && !dropdown.contains(e.target)) {
+                        document.querySelector('.user-dropdown-menu').classList.remove('open');
+                    }
+                });
+            }
+            
+            // Alert close buttons
+            const alertCloseButtons = document.querySelectorAll('.alert-close');
+            alertCloseButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.parentElement.remove();
+                });
+            });
+            
+            // Auto-hide alerts after 5 seconds
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    alert.classList.add('fade-out');
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 500);
+                });
+            }, 5000);
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

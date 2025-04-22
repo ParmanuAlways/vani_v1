@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - VANI System{% endblock %}
+
+{% block header %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="overview-stats">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-file-audio"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ audio_files|length }}</div>
+                <div class="stat-label">Total Uploads</div>
+            </div>
+        </div>
+        
+        {% set pending_count = 0 %}
+        {% set approved_count = 0 %}
+        {% set rejected_count = 0 %}
+        
+        {% for file in audio_files %}
+            {% if 'submitted' in file.status %}
+                {% set pending_count = pending_count + 1 %}
+            {% elif 'approved' in file.status %}
+                {% set approved_count = approved_count + 1 %}
+            {% elif file.status == 'rejected' %}
+                {% set rejected_count = rejected_count + 1 %}
+            {% endif %}
+        {% endfor %}
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ pending_count }}</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ approved_count }}</div>
+                <div class="stat-label">Approved</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ rejected_count }}</div>
+                <div class="stat-label">Rejected</div>
+            </div>
+        </div>
+    </div>
+    
+    {% if user.isPilot %}
+    <div class="action-bar">
+        <a href="/upload" class="btn btn-primary">
+            <i class="fas fa-upload"></i> Upload New Audio
+        </a>
+        <div class="search-container">
+            <input type="text" class="search-input" id="file-search" placeholder="Search files...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        <div class="filter-dropdown">
+            <button class="filter-dropdown-toggle">
+                <i class="fas fa-filter"></i> Filter <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="filter-dropdown-menu">
+                <div class="filter-group">
+                    <h4>Status</h4>
+                    <label>
+                        <input type="checkbox" value="all" checked> All
+                    </label>
+                    <label>
+                        <input type="checkbox" value="queued"> In Queue
+                    </label>
+                    <label>
+                        <input type="checkbox" value="processing"> Processing
+                    </label>
+                    <label>
+                        <input type="checkbox" value="transcribed"> Transcribed
+                    </label>
+                    <label>
+                        <input type="checkbox" value="submitted"> Pending Approval
+                    </label>
+                    <label>
+                        <input type="checkbox" value="approved"> Approved
+                    </label>
+                    <label>
+                        <input type="checkbox" value="rejected"> Rejected
+                    </label>
+                </div>
+                <div class="filter-actions">
+                    <button class="btn btn-sm btn-outline">Reset</button>
+                    <button class="btn btn-sm btn-primary">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if pending_approvals %}
+    <div class="section">
+        <div class="section-header">
+            <h2><i class="fas fa-bell"></i> Pending Approvals</h2>
+        </div>
+        <div class="card-grid">
+            {% for approval in pending_approvals %}
+            <div class="approval-card">
+                <div class="card-badge">Pending</div>
+                <div class="card-header">
+                    <h3 class="card-title">{{ approval.originalFilename }}</h3>
+                    <span class="submission-date">Submitted {{ approval.timestamp|replace('T', ' ') }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="uploader-info">
+                        <i class="fas fa-user"></i> {{ approval.uploaderName }}
+                    </div>
+                    <div class="approval-level">
+                        {% if approval.approvalLevel == 'fltcdr' %}
+                        <span class="badge badge-info">Flight Commander Review</span>
+                        {% elif approval.approvalLevel == 'co' %}
+                        <span class="badge badge-primary">CO Review</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="/approval/{{ approval.audioFileId }}" class="btn btn-primary full-width">
+                        <i class="fas fa-eye"></i> Review
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="section">
+        <div class="section-header">
+            <h2><i class="fas fa-file-audio"></i> Your Audio Files</h2>
+            {% if audio_files %}
+            <div class="section-actions">
+                <div class="view-toggle">
+                    <button class="view-btn grid-view-btn active" data-view="grid">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="view-btn list-view-btn" data-view="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if audio_files %}
+        <div class="view-container grid-view" id="files-container">
+            {% for file in audio_files %}
+            <div class="file-card" data-status="{{ file.status }}">
+                <div class="card-badge {{ file.status }}">
+                    {% if file.status == 'queued' %}
+                        In Queue
+                    {% elif file.status == 'processing' %}
+                        Processing
+                    {% elif file.status == 'transcribed' %}
+                        Transcribed
+                    {% elif file.status == 'submitted_fltcdr' %}
+                        Awaiting Flt Cdr
+                    {% elif file.status == 'approved_fltcdr' %}
+                        Flt Cdr Approved
+                    {% elif file.status == 'submitted_co' %}
+                        Awaiting CO
+                    {% elif file.status == 'approved_co' %}
+                        CO Approved
+                    {% elif file.status == 'rejected' %}
+                        Rejected
+                    {% elif file.status == 'error' %}
+                        Error
+                    {% else %}
+                        {{ file.status }}
+                    {% endif %}
+                </div>
+                <div class="card-header">
+                    <h3 class="card-title">{{ file.originalFilename }}</h3>
+                    <span class="upload-date">{{ file.uploadDate|replace('T', ' ') }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="file-info">
+                        <div class="info-item">
+                            <i class="fas fa-calendar-alt"></i> {{ file.uploadDate.split('T')[0] }}
+                        </div>
+                        {% if file.status == 'queued' %}
+                        <div class="info-item">
+                            <i class="fas fa-sort-numeric-down"></i> Queue: #{{ file.queuePosition }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="button-group">
+                        {% if file.status in ['transcribed', 'rejected', 'approved_fltcdr', 'approved_co', 'submitted_fltcdr', 'submitted_co'] %}
+                        <a href="/transcription/{{ file.id }}" class="btn btn-primary">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        {% endif %}
+                        
+                        {% if file.status in ['transcribed', 'rejected'] and user.isPilot %}
+                        <a href="/edit-transcription/{{ file.id }}" class="btn btn-secondary">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        {% endif %}
+                        
+                        {% if file.status in ['queued', 'processing'] %}
+                        <a href="/transcription/{{ file.id }}" class="btn btn-info">
+                            <i class="fas fa-sync-alt"></i> Check Status
+                        </a>
+                        {% endif %}
+                        
+                        {% if file.transcription_id %}
+                        <a href="/download/{{ file.srtFilename }}" class="btn btn-outline">
+                            <i class="fas fa-download"></i> SRT
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-file-audio"></i>
+            </div>
+            <h3>You haven't uploaded any audio files yet</h3>
+            {% if user.isPilot %}
+            <p>Get started by uploading your first audio file for transcription.</p>
+            <a href="/upload" class="btn btn-primary">Upload Audio</a>
+            {% else %}
+            <p>No audio files are available in your account.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .overview-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .view-container.list-view {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .view-container.list-view .file-card {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+    }
+    
+    .view-container.list-view .card-badge {
+        position: static;
+        margin-right: 15px;
+    }
+    
+    .view-container.list-view .card-header {
+        padding: 0;
+    }
+    
+    .view-container.list-view .card-body {
+        display: none;
+    }
+    
+    .view-container.list-view .card-footer {
+        padding: 0;
+        margin-left: auto;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // View toggle (grid/list)
+        const gridViewBtn = document.querySelector('.grid-view-btn');
+        const listViewBtn = document.querySelector('.list-view-btn');
+        const filesContainer = document.getElementById('files-container');
+        
+        if (gridViewBtn && listViewBtn && filesContainer) {
+            gridViewBtn.addEventListener('click', function() {
+                filesContainer.classList.remove('list-view');
+                filesContainer.classList.add('grid-view');
+                gridViewBtn.classList.add('active');
+                listViewBtn.classList.remove('active');
+            });
+            
+            listViewBtn.addEventListener('click', function() {
+                filesContainer.classList.remove('grid-view');
+                filesContainer.classList.add('list-view');
+                listViewBtn.classList.add('active');
+                gridViewBtn.classList.remove('active');
+            });
+        }
+        
+        // Search functionality
+        const searchInput = document.getElementById('file-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const fileCards = document.querySelectorAll('.file-card');
+                
+                fileCards.forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    if (title.includes(searchTerm)) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Filter dropdown
+        const filterToggle = document.querySelector('.filter-dropdown-toggle');
+        if (filterToggle) {
+            filterToggle.addEventListener('click', function() {
+                document.querySelector('.filter-dropdown-menu').classList.toggle('open');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                const dropdown = document.querySelector('.filter-dropdown');
+                if (dropdown && !dropdown.contains(e.target)) {
+                    document.querySelector('.filter-dropdown-menu').classList.remove('open');
+                }
+            });
+            
+            // Apply filters
+            const applyButton = document.querySelector('.filter-dropdown-menu .btn-primary');
+            if (applyButton) {
+                applyButton.addEventListener('click', function() {
+                    const selectedFilters = [];
+                    document.querySelectorAll('.filter-dropdown-menu input:checked').forEach(checkbox => {
+                        if (checkbox.value !== 'all') {
+                            selectedFilters.push(checkbox.value);
+                        }
+                    });
+                    
+                    const fileCards = document.querySelectorAll('.file-card');
+                    fileCards.forEach(card => {
+                        const status = card.dataset.status;
+                        if (selectedFilters.length === 0 || selectedFilters.some(filter => status.includes(filter))) {
+                            card.style.display = '';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    document.querySelector('.filter-dropdown-menu').classList.remove('open');
+                });
+            }
+            
+            // Reset filters
+            const resetButton = document.querySelector('.filter-dropdown-menu .btn-outline');
+            if (resetButton) {
+                resetButton.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-dropdown-menu input').forEach(checkbox => {
+                        checkbox.checked = checkbox.value === 'all';
+                    });
+                    
+                    const fileCards = document.querySelectorAll('.file-card');
+                    fileCards.forEach(card => {
+                        card.style.display = '';
+                    });
+                });
+            }
+        }
+    });
+</script>
+{% endblock %}

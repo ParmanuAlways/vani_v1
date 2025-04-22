@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Transcription Queued - VANI System{% endblock %}
+
+{% block header %}Transcription Status - {{ audio_file.originalFilename }}{% endblock %}
+
+{% block content %}
+<section class="actions">
+    <a href="/dashboard" class="button secondary">Back to Dashboard</a>
+</section>
+
+<section class="queue-status">
+    <h2>File in Queue</h2>
+    
+    <div class="status-container queued">
+        <div class="status-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+        </div>
+        
+        <div class="status-details">
+            <h3>Your file is waiting to be processed</h3>
+            <p>Current position in queue: <strong>#{{ queue_position }}</strong></p>
+            <p>The system will automatically process your file when it reaches the front of the queue.</p>
+            <p>Processing time depends on the file size and complexity.</p>
+        </div>
+    </div>
+    
+    <div class="queue-info">
+        <h3>What happens next?</h3>
+        <ol>
+            <li>Your file will be automatically processed when it reaches the front of the queue</li>
+            <li>The system will transcribe the audio and identify different speakers</li>
+            <li>You'll be able to review and edit the transcription</li>
+            <li>After editing, you can submit it for approval</li>
+        </ol>
+    </div>
+    
+    <div class="refresh-action">
+        <p>You can check back later to see if processing has completed.</p>
+        <a href="/transcription/{{ audio_file.id }}" class="button primary">Refresh Status</a>
+    </div>
+</section>
+
+<section class="file-details">
+    <h2>File Information</h2>
+    <div class="details-grid">
+        <div class="detail-item">
+            <span class="label">Original Filename:</span>
+            <span class="value">{{ audio_file.originalFilename }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="label">Upload Date:</span>
+            <span class="value">{{ audio_file.uploadDate }}</span>
+        </div>
+        <div class="detail-item">
+            <span class="label">Status:</span>
+            <span class="value status queued">In Queue</span>
+        </div>
+        <div class="detail-item">
+            <span class="label">Queue Position:</span>
+            <span class="value">#{{ queue_position }}</span>
+        </div>
+    </div>
+</section>
+{% endblock %}

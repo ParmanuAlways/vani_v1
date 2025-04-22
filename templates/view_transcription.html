@@ -1,0 +1,894 @@
+{% extends "base.html" %}
+
+{% block title %}Transcription - VANI System{% endblock %}
+
+{% block header %}Transcription: {{ audio_file.originalFilename }}{% endblock %}
+
+{% block content %}
+<div class="transcription-container">
+    <div class="content-header">
+        <div class="breadcrumb">
+            <a href="/dashboard"><i class="fas fa-home"></i></a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Transcription</span>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="/dashboard" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <a href="/download/{{ transcription.srtFilename }}" class="btn btn-primary">
+                <i class="fas fa-download"></i> Download SRT
+            </a>
+            {% if audio_file.status in ['transcribed', 'rejected'] and audio_file.uploadedBy == user.serviceNo %}
+            <a href="/edit-transcription/{{ audio_file.id }}" class="btn btn-secondary">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="transcription-details">
+        <div class="file-info-card">
+            <div class="card-header">
+                <h3><i class="fas fa-info-circle"></i> File Information</h3>
+            </div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Original Filename:</span>
+                        <span class="info-value">{{ audio_file.originalFilename }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Upload Date:</span>
+                        <span class="info-value">{{ audio_file.uploadDate|replace('T', ' ') }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value">
+                            <span class="badge {{ audio_file.status }}">
+                                {% if audio_file.status == 'transcribed' %}
+                                    Transcribed
+                                {% elif audio_file.status == 'submitted_fltcdr' %}
+                                    Submitted to Flight Commander
+                                {% elif audio_file.status == 'approved_fltcdr' %}
+                                    Approved by Flight Commander
+                                {% elif audio_file.status == 'submitted_co' %}
+                                    Submitted to CO
+                                {% elif audio_file.status == 'approved_co' %}
+                                    Approved by CO
+                                {% elif audio_file.status == 'rejected' %}
+                                    Rejected
+                                {% else %}
+                                    {{ audio_file.status }}
+                                {% endif %}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Last Edited:</span>
+                        <span class="info-value">{{ transcription.lastEdited|replace('T', ' ') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if audio_file.status == 'transcribed' and audio_file.uploadedBy == user.serviceNo and user.isPilot %}
+    <div class="submission-card">
+        <div class="card-header">
+            <h3><i class="fas fa-paper-plane"></i> Submit for Approval</h3>
+        </div>
+        <div class="card-body">
+            <form action="/submit-for-approval/{{ audio_file.id }}" method="post" class="submission-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="approval-level">Submit to:</label>
+                        <select id="approval-level" name="level" class="form-control" required>
+                            <option value="fltcdr">Flight Commander</option>
+                            <option value="co">Commanding Officer</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="fltcdr-select-group">
+                        <label for="fltcdr-select">Select Flight Commander:</label>
+                        <select id="fltcdr-select" name="approver_service_no" class="form-control" required>
+                            {% for fltcdr in available_flt_cdrs %}
+                            <option value="{{ fltcdr.serviceNo }}">{{ fltcdr.name }} ({{ fltcdr.serviceNo }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="co-select-group" style="display: none;">
+                        <label for="co-select">Select Commanding Officer:</label>
+                        <select id="co-select" name="approver_service_no" class="form-control" disabled>
+                            {% for co in available_cos %}
+                            <option value="{{ co.serviceNo }}">{{ co.name }} ({{ co.serviceNo }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Submit for Approval
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="transcription-viewer">
+        <div class="viewer-header">
+            <h2><i class="fas fa-microphone-alt"></i> Transcription with Speaker Diarization</h2>
+            
+            <div class="viewer-controls">
+                <div class="view-mode-toggle">
+                    <button class="toggle-btn active" data-mode="timeline">
+                        <i class="fas fa-stream"></i> Timeline
+                    </button>
+                    <button class="toggle-btn" data-mode="text">
+                        <i class="fas fa-align-left"></i> Text
+                    </button>
+                </div>
+                
+                <div class="speaker-filter">
+                    <label for="filter-speaker">Speaker:</label>
+                    <select id="filter-speaker" class="form-control">
+                        <option value="all">All Speakers</option>
+                        {% set speakers = [] %}
+                        {% for segment in transcription.segments %}
+                            {% if segment.speaker not in speakers %}
+                                {% set _ = speakers.append(segment.speaker) %}
+                                <option value="{{ segment.speaker }}">{{ segment.speaker }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="viewer-content">
+            {% if transcription and transcription.segments %}
+                <div class="speaker-timeline view-mode active" data-mode="timeline">
+                    <div class="timeline-controls">
+                        <div class="zoom-controls">
+                            <button class="zoom-out" title="Zoom out"><i class="fas fa-search-minus"></i></button>
+                            <div class="zoom-slider-container">
+                                <input type="range" class="zoom-slider" min="1" max="10" value="5">
+                            </div>
+                            <button class="zoom-in" title="Zoom in"><i class="fas fa-search-plus"></i></button>
+                        </div>
+                        
+                        <div class="color-palette">
+                            <button class="color-scheme-toggle" title="Toggle color scheme">
+                                <i class="fas fa-palette"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-container">
+                        <div class="timeline-header">
+                            <div class="timeline-scale">
+                                {% set total_duration = transcription.segments[-1].end_time if transcription.segments else 0 %}
+                                <div class="timeline-markers">
+                                    {% for i in range(0, (total_duration|int) + 1, 30) %}
+                                        <div class="time-marker" style="left: {{ (i / total_duration * 100) if total_duration > 0 else 0 }}%">
+                                            {{ "%02d:%02d"|format(i // 60, i % 60) }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="speaker-rows">
+                            {% set speakers = [] %}
+                            {% for segment in transcription.segments %}
+                                {% if segment.speaker not in speakers %}
+                                    {% set _ = speakers.append(segment.speaker) %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% for speaker in speakers %}
+                            <div class="speaker-row" data-speaker="{{ speaker }}">
+                                <div class="speaker-label">
+                                    <div class="speaker-avatar">
+                                        <span>{{ speaker[0].upper() }}</span>
+                                    </div>
+                                    <span>{{ speaker }}</span>
+                                </div>
+                                
+                                <div class="speaker-segments">
+                                    {% for segment in transcription.segments %}
+                                        {% if segment.speaker == speaker %}
+                                            {% set total_duration = transcription.segments[-1].end_time if transcription.segments else 0 %}
+                                            {% set segment_left = (segment.start_time / total_duration * 100) if total_duration > 0 else 0 %}
+                                            {% set segment_width = ((segment.end_time - segment.start_time) / total_duration * 100) if total_duration > 0 else 0 %}
+                                            
+                                            <div class="timeline-segment" 
+                                                style="left: {{ segment_left }}%; width: {{ segment_width }}%;"
+                                                data-start="{{ segment.start_time }}"
+                                                data-end="{{ segment.end_time }}"
+                                                data-text="{{ segment.text }}"
+                                                data-segment-id="{{ segment.start_time|replace('.', '-') }}"
+                                                onclick="highlightSegment('{{ segment.start_time }}')">
+                                                
+                                                <div class="segment-tooltip">
+                                                    <span class="tooltip-time">{{ "%02d:%02d"|format(segment.start_time // 60, segment.start_time % 60) }} - {{ "%02d:%02d"|format(segment.end_time // 60, segment.end_time % 60) }}</span>
+                                                    <span class="tooltip-text">{{ segment.text|truncate(50) }}</span>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-view view-mode" data-mode="text">
+                    <div class="text-view-controls">
+                        <div class="display-options">
+                            <label>
+                                <input type="checkbox" id="show-timestamps" checked> 
+                                Show Timestamps
+                            </label>
+                            <label>
+                                <input type="checkbox" id="group-by-speaker"> 
+                                Group by Speaker
+                            </label>
+                        </div>
+                        
+                        <div class="text-size-controls">
+                            <button class="text-size-decrease" title="Decrease text size"><i class="fas fa-font"></i> -</button>
+                            <button class="text-size-increase" title="Increase text size"><i class="fas fa-font"></i> +</button>
+                        </div>
+                    </div>
+                    
+                    <div class="segment-list" id="segment-list">
+                        {% for segment in transcription.segments %}
+                            <div class="segment" data-speaker="{{ segment.speaker }}" id="segment-{{ segment.start_time|replace('.', '-') }}">
+                                <div class="segment-header">
+                                    <div class="segment-speaker">
+                                        <span class="speaker-avatar">
+                                            <span>{{ segment.speaker[0].upper() }}</span>
+                                        </span>
+                                        <span class="speaker-name">{{ segment.speaker }}</span>
+                                    </div>
+                                    <span class="segment-timestamp">
+                                        {{ "%02d:%02d"|format(segment.start_time // 60, segment.start_time % 60) }} - {{ "%02d:%02d"|format(segment.end_time // 60, segment.end_time % 60) }}
+                                    </span>
+                                </div>
+                                <div class="segment-text">{{ segment.text }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-microphone-slash"></i>
+                    </div>
+                    <h3>No transcription found</h3>
+                    <p>There are no transcription segments available for this file.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+    .transcription-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+    
+    .breadcrumb a {
+        color: var(--text-secondary);
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        color: var(--primary-color);
+    }
+    
+    .file-info-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 15px;
+    }
+    
+    .info-item {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .info-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 5px;
+    }
+    
+    .info-value {
+        font-weight: 500;
+    }
+    
+    .submission-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .transcription-viewer {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+    
+    .viewer-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        background-color: var(--card-header-bg);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .viewer-controls {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .view-mode-toggle {
+        display: flex;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+    
+    .toggle-btn {
+        background: none;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--text-primary);
+    }
+    
+    .toggle-btn:not(:last-child) {
+        border-right: 1px solid var(--border-color);
+    }
+    
+    .toggle-btn.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .viewer-content {
+        padding: 20px;
+    }
+    
+    .view-mode {
+        display: none;
+    }
+    
+    .view-mode.active {
+        display: block;
+    }
+    
+    .timeline-controls {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+    
+    .zoom-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .zoom-slider-container {
+        width: 100px;
+    }
+    
+    .zoom-slider {
+        width: 100%;
+    }
+    
+    .timeline-container {
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        background-color: var(--timeline-bg);
+    }
+    
+    .timeline-header {
+        height: 30px;
+        position: relative;
+        margin-bottom: 15px;
+    }
+    
+    .timeline-scale {
+        position: relative;
+        height: 20px;
+        margin-left: 120px;
+    }
+    
+    .timeline-markers {
+        position: relative;
+        height: 100%;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .time-marker {
+        position: absolute;
+        font-size: 10px;
+        top: -15px;
+        transform: translateX(-50%);
+        color: var(--text-secondary);
+    }
+    
+    .time-marker::after {
+        content: '';
+        position: absolute;
+        height: 5px;
+        width: 1px;
+        background-color: var(--border-color);
+        bottom: -6px;
+        left: 50%;
+    }
+    
+    .speaker-rows {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .speaker-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 30px;
+    }
+    
+    .speaker-label {
+        width: 110px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 500;
+    }
+    
+    .speaker-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    .speaker-segments {
+        flex-grow: 1;
+        height: 20px;
+        position: relative;
+        background-color: var(--timeline-track-bg);
+        border-radius: 3px;
+    }
+    
+    .timeline-segment {
+        position: absolute;
+        height: 100%;
+        background-color: var(--primary-color);
+        border-radius: 3px;
+        opacity: 0.8;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+    
+    .timeline-segment:hover {
+        opacity: 1;
+    }
+    
+    .segment-tooltip {
+        position: absolute;
+        background-color: var(--tooltip-bg);
+        color: var(--text-on-primary);
+        padding: 5px 8px;
+        border-radius: var(--border-radius);
+        font-size: 12px;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        display: none;
+        z-index: 10;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        width: max-content;
+        max-width: 200px;
+    }
+    
+    .timeline-segment:hover .segment-tooltip {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .tooltip-time {
+        font-weight: 500;
+        margin-bottom: 3px;
+    }
+    
+    .tooltip-text {
+        font-size: 11px;
+        opacity: 0.9;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .segment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        max-height: 500px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    
+    .segment {
+        background-color: var(--segment-bg);
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--primary-color);
+        padding: 15px;
+        transition: background-color 0.2s;
+    }
+    
+    .segment:hover {
+        background-color: var(--segment-hover-bg);
+    }
+    
+    .segment.highlight {
+        background-color: var(--segment-highlight-bg);
+        border-left-color: var(--highlight-color);
+    }
+    
+    .segment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .segment-speaker {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .speaker-name {
+        font-weight: 500;
+    }
+    
+    .segment-timestamp {
+        font-size: 12px;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .segment-timestamp i {
+        font-size: 10px;
+    }
+    
+    .segment-text {
+        line-height: 1.5;
+    }
+    
+    .text-view-controls {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+    
+    .display-options {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .text-size-controls {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .text-size-decrease,
+    .text-size-increase {
+        background: none;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle between timeline and text view
+        const viewModeToggles = document.querySelectorAll('.toggle-btn');
+        viewModeToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const viewMode = this.getAttribute('data-mode');
+                
+                // Update toggle buttons
+                viewModeToggles.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update view modes
+                document.querySelectorAll('.view-mode').forEach(mode => {
+                    mode.classList.remove('active');
+                });
+                document.querySelector(`.view-mode[data-mode="${viewMode}"]`).classList.add('active');
+            });
+        });
+        
+        // Speaker filter functionality
+        const filterSelect = document.getElementById('filter-speaker');
+        if (filterSelect) {
+            filterSelect.addEventListener('change', function() {
+                const selectedSpeaker = this.value;
+                
+                // Filter segments in text view
+                const segments = document.querySelectorAll('.segment');
+                segments.forEach(segment => {
+                    if (selectedSpeaker === 'all' || segment.dataset.speaker === selectedSpeaker) {
+                        segment.style.display = '';
+                    } else {
+                        segment.style.display = 'none';
+                    }
+                });
+                
+                // Filter rows in timeline view
+                const speakerRows = document.querySelectorAll('.speaker-row');
+                speakerRows.forEach(row => {
+                    if (selectedSpeaker === 'all' || row.dataset.speaker === selectedSpeaker) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Zoom controls
+        const zoomSlider = document.querySelector('.zoom-slider');
+        const zoomIn = document.querySelector('.zoom-in');
+        const zoomOut = document.querySelector('.zoom-out');
+        
+        if (zoomSlider && zoomIn && zoomOut) {
+            // Zoom slider
+            zoomSlider.addEventListener('input', function() {
+                updateZoom(this.value);
+            });
+            
+            // Zoom in button
+            zoomIn.addEventListener('click', function() {
+                zoomSlider.value = Math.min(parseInt(zoomSlider.value) + 1, 10);
+                updateZoom(zoomSlider.value);
+            });
+            
+            // Zoom out button
+            zoomOut.addEventListener('click', function() {
+                zoomSlider.value = Math.max(parseInt(zoomSlider.value) - 1, 1);
+                updateZoom(zoomSlider.value);
+            });
+            
+            function updateZoom(level) {
+                const timelineContainer = document.querySelector('.timeline-container');
+                timelineContainer.style.setProperty('--timeline-zoom', level);
+                
+                // Adjust width of the timeline container based on zoom level
+                const width = 100 + (level - 5) * 20; // 100% at level 5, +/- 20% per level
+                timelineContainer.style.width = `${width}%`;
+            }
+        }
+        
+        // Toggle color scheme
+        const colorSchemeToggle = document.querySelector('.color-scheme-toggle');
+        if (colorSchemeToggle) {
+            colorSchemeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('alt-color-scheme');
+            });
+        }
+        
+        // Text size controls
+        const textSizeIncrease = document.querySelector('.text-size-increase');
+        const textSizeDecrease = document.querySelector('.text-size-decrease');
+        const segmentList = document.getElementById('segment-list');
+        
+        if (textSizeIncrease && textSizeDecrease && segmentList) {
+            // Default size
+            let currentSize = 16;
+            
+            textSizeIncrease.addEventListener('click', function() {
+                currentSize = Math.min(currentSize + 1, 24);
+                segmentList.style.fontSize = `${currentSize}px`;
+            });
+            
+            textSizeDecrease.addEventListener('click', function() {
+                currentSize = Math.max(currentSize - 1, 12);
+                segmentList.style.fontSize = `${currentSize}px`;
+            });
+        }
+        
+        // Toggle timestamps
+        const showTimestamps = document.getElementById('show-timestamps');
+        if (showTimestamps) {
+            showTimestamps.addEventListener('change', function() {
+                const timestamps = document.querySelectorAll('.segment-timestamp');
+                timestamps.forEach(timestamp => {
+                    timestamp.style.display = this.checked ? '' : 'none';
+                });
+            });
+        }
+        
+        // Group by speaker
+        const groupBySpeaker = document.getElementById('group-by-speaker');
+        if (groupBySpeaker) {
+            groupBySpeaker.addEventListener('change', function() {
+                const segmentList = document.getElementById('segment-list');
+                
+                if (this.checked) {
+                    // Get all speakers
+                    const speakerMap = {};
+                    const segments = Array.from(document.querySelectorAll('.segment'));
+                    
+                    segments.forEach(segment => {
+                        const speaker = segment.dataset.speaker;
+                        if (!speakerMap[speaker]) {
+                            speakerMap[speaker] = [];
+                        }
+                        speakerMap[speaker].push(segment.cloneNode(true));
+                        segment.remove();
+                    });
+                    
+                    // Create speaker groups
+                    for (const speaker in speakerMap) {
+                        const speakerGroup = document.createElement('div');
+                        speakerGroup.className = 'speaker-group';
+                        
+                        const speakerHeader = document.createElement('div');
+                        speakerHeader.className = 'speaker-group-header';
+                        speakerHeader.innerHTML = `
+                            <div class="speaker-info">
+                                <span class="speaker-avatar">
+                                    <span>${speaker[0].toUpperCase()}</span>
+                                </span>
+                                <span class="speaker-name">${speaker}</span>
+                            </div>
+                        `;
+                        
+                        speakerGroup.appendChild(speakerHeader);
+                        
+                        const segmentsContainer = document.createElement('div');
+                        segmentsContainer.className = 'speaker-segments-container';
+                        
+                        speakerMap[speaker].forEach(segment => {
+                            // Remove duplicate speaker info since it's in the header
+                            const speakerElement = segment.querySelector('.segment-speaker');
+                            if (speakerElement) {
+                                speakerElement.style.display = 'none';
+                            }
+                            
+                            segmentsContainer.appendChild(segment);
+                        });
+                        
+                        speakerGroup.appendChild(segmentsContainer);
+                        segmentList.appendChild(speakerGroup);
+                    }
+                } else {
+                    // Reset to chronological view
+                    location.reload(); // Simplest way to reset the view
+                }
+            });
+        }
+        
+        // Highlight timeline segments when clicked
+        const timelineSegments = document.querySelectorAll('.timeline-segment');
+        timelineSegments.forEach(segment => {
+            segment.addEventListener('click', function() {
+                const segmentId = this.getAttribute('data-segment-id');
+                highlightSegment(segmentId);
+            });
+        });
+        
+        // Approval level selection for pilot submission
+        const approvalLevelSelect = document.getElementById('approval-level');
+        const fltcdrGroup = document.getElementById('fltcdr-select-group');
+        const coGroup = document.getElementById('co-select-group');
+        const fltcdrSelect = document.getElementById('fltcdr-select');
+        const coSelect = document.getElementById('co-select');
+        
+        if (approvalLevelSelect) {
+            approvalLevelSelect.addEventListener('change', function() {
+                if (this.value === 'fltcdr') {
+                    fltcdrGroup.style.display = '';
+                    coGroup.style.display = 'none';
+                    fltcdrSelect.disabled = false;
+                    coSelect.disabled = true;
+                } else {
+                    fltcdrGroup.style.display = 'none';
+                    coGroup.style.display = '';
+                    fltcdrSelect.disabled = true;
+                    coSelect.disabled = false;
+                }
+            });
+        }
+    });
+    
+    // Function to highlight a segment
+    function highlightSegment(segmentId) {
+        // Remove highlight from all segments
+        document.querySelectorAll('.segment').forEach(segment => {
+            segment.classList.remove('highlight');
+        });
+        
+        // Add highlight to the selected segment
+        const segment = document.getElementById(`segment-${segmentId}`);
+        if (segment) {
+            segment.classList.add('highlight');
+            segment.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+</script>
+{% endblock %}

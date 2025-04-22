@@ -1,0 +1,1464 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Transcription - VANI System{% endblock %}
+
+{% block header %}Edit Transcription: {{ audio_file.originalFilename }}{% endblock %}
+
+{% block content %}
+<div class="transcription-container">
+    <div class="content-header">
+        <div class="breadcrumb">
+            <a href="/dashboard"><i class="fas fa-home"></i></a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="/transcription/{{ audio_file.id }}">Transcription</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Edit</span>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="/transcription/{{ audio_file.id }}" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Back to Transcription
+            </a>
+            <a href="/dashboard" class="btn btn-outline">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        </div>
+    </div>
+    
+    <div class="editor-header-card">
+        <div class="card-header">
+            <h3><i class="fas fa-edit"></i> Edit Transcription</h3>
+            
+            <div class="editor-controls">
+                <div class="editor-mode-toggle">
+                    <button class="toggle-btn active" data-mode="visual" id="visual-mode-btn">
+                        <i class="fas fa-user-edit"></i> Visual Editor
+                    </button>
+                    <button class="toggle-btn" data-mode="advanced" id="advanced-mode-btn">
+                        <i class="fas fa-code"></i> Advanced Mode
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <p>You can edit speaker names and text content of the transcription. Changes will be saved when you click the "Save Changes" button.</p>
+            
+            <div class="editor-toolbar">
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" title="Find and replace" id="find-replace-btn">
+                        <i class="fas fa-search"></i> Find
+                    </button>
+                    <button class="toolbar-btn" title="Merge similar speakers" id="merge-speakers-btn">
+                        <i class="fas fa-users"></i> Merge Speakers
+                    </button>
+                    <button class="toolbar-btn" title="Rename speakers" id="rename-speakers-btn">
+                        <i class="fas fa-user-edit"></i> Rename Speakers
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <select class="form-control" id="speaker-filter">
+                        <option value="all">All Speakers</option>
+                        {% set speakers = [] %}
+                        {% for segment in transcription.segments %}
+                            {% if segment.speaker not in speakers %}
+                                {% set _ = speakers.append(segment.speaker) %}
+                                <option value="{{ segment.speaker }}">{{ segment.speaker }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <form action="/update-transcription/{{ transcription.id }}" method="post" class="edit-form">
+        <div class="editor-container">
+            <div class="editor-mode active" id="visual-editor" data-mode="visual">
+                <div class="segment-editor-container" id="segments-container">
+                    {% if transcription.segments %}
+                        {% for segment in transcription.segments %}
+                            <div class="segment-editor-item" data-index="{{ loop.index0 }}" data-speaker="{{ segment.speaker }}">
+                                <div class="segment-editor-header">
+                                    <div class="speaker-edit">
+                                        <div class="speaker-avatar">
+                                            <span>{{ segment.speaker[0].upper() }}</span>
+                                        </div>
+                                        <input type="text" class="speaker-input form-control" 
+                                               value="{{ segment.speaker }}" 
+                                               data-field="speaker" 
+                                               data-index="{{ loop.index0 }}">
+                                    </div>
+                                    <div class="segment-time">
+                                        {{ "%02d:%02d"|format(segment.start_time // 60, segment.start_time % 60) }} - 
+                                        {{ "%02d:%02d"|format(segment.end_time // 60, segment.end_time % 60) }}
+                                    </div>
+                                    <div class="segment-actions">
+                                        <button type="button" class="action-btn merge-up" title="Merge with segment above" data-index="{{ loop.index0 }}" {% if loop.first %}disabled{% endif %}>
+                                            <i class="fas fa-arrow-up"></i>
+                                        </button>
+                                        <button type="button" class="action-btn merge-down" title="Merge with segment below" data-index="{{ loop.index0 }}" {% if loop.last %}disabled{% endif %}>
+                                            <i class="fas fa-arrow-down"></i>
+                                        </button>
+                                        <button type="button" class="action-btn split-segment" title="Split segment" data-index="{{ loop.index0 }}">
+                                            <i class="fas fa-cut"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="segment-editor-body">
+                                    <textarea class="text-input form-control" 
+                                              rows="3" 
+                                              data-field="text" 
+                                              data-index="{{ loop.index0 }}">{{ segment.text }}</textarea>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <h3>No segments to edit</h3>
+                            <p>There are no transcription segments available for editing.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="editor-mode" id="advanced-editor" data-mode="advanced">
+                <div class="advanced-editor-info">
+                    <div class="info-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="info-content">
+                        <h4>Advanced Mode</h4>
+                        <p>Edit the raw JSON representation of the transcription. Be careful to maintain the correct format.</p>
+                    </div>
+                </div>
+                
+                <div class="advanced-editor-container">
+                    <textarea name="content" id="raw-content" class="form-control code-editor" rows="20" required>{{ transcription.transcriptionContent }}</textarea>
+                </div>
+                
+                <div class="json-validation-error" id="json-error" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="error-message">Invalid JSON format. Please fix before saving.</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="editor-actions">
+            <a href="/transcription/{{ audio_file.id }}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary" id="save-btn">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </div>
+    </form>
+    
+    <!-- Dialogs -->
+    <div class="modal" id="find-replace-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Find and Replace</h3>
+                <button class="modal-close" id="find-replace-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="find-text">Find:</label>
+                    <input type="text" id="find-text" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="replace-text">Replace with:</label>
+                    <input type="text" id="replace-text" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="case-sensitive"> Case sensitive
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="whole-word"> Whole word only
+                    </label>
+                </div>
+                <div class="find-results">
+                    <span id="find-count">0</span> matches found
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="find-btn">
+                    <i class="fas fa-search"></i> Find
+                </button>
+                <button class="btn btn-secondary" id="replace-btn">
+                    <i class="fas fa-exchange-alt"></i> Replace
+                </button>
+                <button class="btn btn-primary" id="replace-all-btn">
+                    <i class="fas fa-exchange-alt"></i> Replace All
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="merge-speakers-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Merge Similar Speakers</h3>
+                <button class="modal-close" id="merge-speakers-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Select speakers that should be merged into a single speaker:</p>
+                <div class="speaker-list" id="merge-speaker-list">
+                    {% set speakers = [] %}
+                    {% for segment in transcription.segments %}
+                        {% if segment.speaker not in speakers %}
+                            {% set _ = speakers.append(segment.speaker) %}
+                            <div class="speaker-item">
+                                <label>
+                                    <input type="checkbox" value="{{ segment.speaker }}" class="speaker-checkbox">
+                                    <span class="speaker-avatar">
+                                        <span>{{ segment.speaker[0].upper() }}</span>
+                                    </span>
+                                    <span class="speaker-name">{{ segment.speaker }}</span>
+                                </label>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="new-speaker-name">New speaker name:</label>
+                    <input type="text" id="new-speaker-name" class="form-control" placeholder="Enter new speaker name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-merge-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn btn-primary" id="confirm-merge-btn">
+                    <i class="fas fa-users"></i> Merge Speakers
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="rename-speakers-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Rename Speakers</h3>
+                <button class="modal-close" id="rename-speakers-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Update the names of speakers in the transcription:</p>
+                <div class="rename-list" id="rename-speaker-list">
+                    {% set speakers = [] %}
+                    {% for segment in transcription.segments %}
+                        {% if segment.speaker not in speakers %}
+                            {% set _ = speakers.append(segment.speaker) %}
+                            <div class="rename-item">
+                                <div class="current-name">
+                                    <span class="speaker-avatar">
+                                        <span>{{ segment.speaker[0].upper() }}</span>
+                                    </span>
+                                    <span class="speaker-name">{{ segment.speaker }}</span>
+                                </div>
+                                <div class="rename-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                                <div class="new-name">
+                                    <input type="text" class="form-control rename-input" 
+                                           data-original="{{ segment.speaker }}" 
+                                           placeholder="New name">
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-rename-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn btn-primary" id="confirm-rename-btn">
+                    <i class="fas fa-user-edit"></i> Rename Speakers
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="split-segment-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Split Segment</h3>
+                <button class="modal-close" id="split-segment-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Select where to split the text. The second part will become a new segment:</p>
+                <div class="segment-preview" id="segment-to-split">
+                    <!-- Text will be inserted here -->
+                </div>
+                <div class="form-group">
+                    <label for="split-position">Split position:</label>
+                    <div class="split-slider-container">
+                        <input type="range" id="split-position" class="form-control" min="0" max="100" value="50">
+                    </div>
+                </div>
+                <div class="split-preview">
+                    <div class="preview-part">
+                        <h4>First part:</h4>
+                        <div class="preview-text" id="first-part-preview"></div>
+                    </div>
+                    <div class="preview-part">
+                        <h4>Second part:</h4>
+                        <div class="preview-text" id="second-part-preview"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="second-part-speaker">Speaker for second part:</label>
+                    <select id="second-part-speaker" class="form-control">
+                        <option value="same">Same as first part</option>
+                        <option value="new">New speaker</option>
+                        {% set speakers = [] %}
+                        {% for segment in transcription.segments %}
+                            {% if segment.speaker not in speakers %}
+                                {% set _ = speakers.append(segment.speaker) %}
+                                <option value="{{ segment.speaker }}">{{ segment.speaker }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" id="new-speaker-group" style="display: none;">
+                    <label for="new-split-speaker">New speaker name:</label>
+                    <input type="text" id="new-split-speaker" class="form-control" placeholder="Enter new speaker name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-split-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn btn-primary" id="confirm-split-btn">
+                    <i class="fas fa-cut"></i> Split Segment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+    .transcription-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .editor-header-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+    
+    .editor-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .editor-mode-toggle {
+        display: flex;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+    
+    .toggle-btn {
+        background: none;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--text-primary);
+    }
+    
+    .toggle-btn:not(:last-child) {
+        border-right: 1px solid var(--border-color);
+    }
+    
+    .toggle-btn.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .editor-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .toolbar-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .toolbar-btn {
+        background-color: var(--card-header-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 8px 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--text-primary);
+        transition: all 0.2s;
+    }
+    
+    .toolbar-btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .editor-container {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+    
+    .editor-mode {
+        display: none;
+        padding: 20px;
+    }
+    
+    .editor-mode.active {
+        display: block;
+    }
+    
+    .segment-editor-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        max-height: 600px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    
+    .segment-editor-item {
+        background-color: var(--segment-bg);
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--primary-color);
+        padding: 15px;
+        transition: background-color 0.2s;
+    }
+    
+    .segment-editor-item:hover {
+        background-color: var(--segment-hover-bg);
+    }
+    
+    .segment-editor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        gap: 15px;
+    }
+    
+    .speaker-edit {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 180px;
+    }
+    
+    .speaker-avatar {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    
+    .speaker-input {
+        max-width: 150px;
+    }
+    
+    .segment-time {
+        color: var(--text-secondary);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .segment-actions {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .action-btn {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--card-header-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .action-btn:hover:not(:disabled) {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .action-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .segment-editor-body {
+        margin-top: 10px;
+    }
+    
+    .text-input {
+        width: 100%;
+        resize: vertical;
+    }
+    
+    .advanced-editor-info {
+        display: flex;
+        gap: 15px;
+        padding: 15px;
+        background-color: rgba(79, 140, 255, 0.1);
+        border-radius: var(--border-radius);
+        margin-bottom: 20px;
+    }
+    
+    .info-icon {
+        font-size: 24px;
+        color: var(--primary-color);
+    }
+    
+    .info-content h4 {
+        margin: 0 0 5px 0;
+    }
+    
+    .info-content p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+    
+    .code-editor {
+        font-family: monospace;
+        background-color: var(--input-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        line-height: 1.5;
+        tab-size: 4;
+    }
+    
+    .json-validation-error {
+        background-color: rgba(231, 76, 60, 0.1);
+        border-left: 3px solid var(--error-color);
+        color: var(--text-primary);
+        padding: 10px 15px;
+        margin-top: 15px;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .editor-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(3px);
+    }
+    
+    .modal.open {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal-content {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .modal-header h3 {
+        margin: 0;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 18px;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    
+    .find-results {
+        margin-top: 15px;
+        color: var(--text-secondary);
+        font-size: 14px;
+    }
+    
+    /* Speaker list styles */
+    .speaker-list, .rename-list {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: var(--input-bg);
+        border-radius: var(--border-radius);
+    }
+    
+    .speaker-item {
+        margin-bottom: 10px;
+    }
+    
+    .speaker-item label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+    
+    .rename-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .current-name {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 150px;
+    }
+    
+    .rename-arrow {
+        color: var(--text-secondary);
+    }
+    
+    .new-name {
+        flex-grow: 1;
+    }
+    
+    /* Split segment styles */
+    .segment-preview {
+        background-color: var(--input-bg);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-bottom: 15px;
+        max-height: 100px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+    }
+    
+    .split-slider-container {
+        padding: 0 10px;
+    }
+    
+    .split-preview {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .preview-part {
+        background-color: var(--input-bg);
+        border-radius: var(--border-radius);
+        padding: 15px;
+    }
+    
+    .preview-part h4 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+    
+    .preview-text {
+        white-space: pre-wrap;
+    }
+    
+    @media (max-width: 768px) {
+        .segment-editor-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .segment-time {
+            margin-bottom: 10px;
+        }
+        
+        .split-preview {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial transcription data
+        let transcriptionData = [];
+        try {
+            transcriptionData = JSON.parse('{{ transcription.transcriptionContent|tojson }}');
+        } catch (e) {
+            console.error('Error parsing transcription data:', e);
+            transcriptionData = [];
+        }
+        
+        // Editor mode toggle
+        const visualModeBtn = document.getElementById('visual-mode-btn');
+        const advancedModeBtn = document.getElementById('advanced-mode-btn');
+        const visualEditor = document.getElementById('visual-editor');
+        const advancedEditor = document.getElementById('advanced-editor');
+        const rawContent = document.getElementById('raw-content');
+        
+        visualModeBtn.addEventListener('click', function() {
+            visualModeBtn.classList.add('active');
+            advancedModeBtn.classList.remove('active');
+            visualEditor.classList.add('active');
+            advancedEditor.classList.remove('active');
+            
+            // Try to update visual editor from advanced mode
+            if (rawContent.value) {
+                try {
+                    const updatedData = JSON.parse(rawContent.value);
+                    updateVisualEditor(updatedData);
+                    hideJsonError();
+                } catch (e) {
+                    showJsonError('Cannot switch to Visual Editor: ' + e.message);
+                    // Switch back to advanced mode
+                    setTimeout(() => {
+                        visualModeBtn.classList.remove('active');
+                        advancedModeBtn.classList.add('active');
+                        visualEditor.classList.remove('active');
+                        advancedEditor.classList.add('active');
+                    }, 100);
+                }
+            }
+        });
+        
+        advancedModeBtn.addEventListener('click', function() {
+            advancedModeBtn.classList.add('active');
+            visualModeBtn.classList.remove('active');
+            advancedEditor.classList.add('active');
+            visualEditor.classList.remove('active');
+            
+            // Update raw content from visual editor
+            updateRawContent();
+        });
+        
+        // Speaker filter
+        const speakerFilter = document.getElementById('speaker-filter');
+        speakerFilter.addEventListener('change', function() {
+            const selectedSpeaker = this.value;
+            const segmentItems = document.querySelectorAll('.segment-editor-item');
+            
+            segmentItems.forEach(item => {
+                if (selectedSpeaker === 'all' || item.dataset.speaker === selectedSpeaker) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        // Find and Replace
+        const findReplaceBtn = document.getElementById('find-replace-btn');
+        const findReplaceModal = document.getElementById('find-replace-modal');
+        const findReplaceClose = document.getElementById('find-replace-close');
+        const findText = document.getElementById('find-text');
+        const replaceText = document.getElementById('replace-text');
+        const caseSensitive = document.getElementById('case-sensitive');
+        const wholeWord = document.getElementById('whole-word');
+        const findBtn = document.getElementById('find-btn');
+        const replaceBtn = document.getElementById('replace-btn');
+        const replaceAllBtn = document.getElementById('replace-all-btn');
+        const findCount = document.getElementById('find-count');
+
+        findReplaceBtn.addEventListener('click', function() {
+            findReplaceModal.classList.add('open');
+            findText.focus();
+        });
+        
+        findReplaceClose.addEventListener('click', function() {
+            findReplaceModal.classList.remove('open');
+        });
+        
+        findBtn.addEventListener('click', function() {
+            const searchText = findText.value;
+            if (!searchText) return;
+            
+            const isCaseSensitive = caseSensitive.checked;
+            const isWholeWord = wholeWord.checked;
+            let count = 0;
+            
+            // Reset highlights
+            document.querySelectorAll('.text-input').forEach(input => {
+                const text = input.value;
+                const originalText = text;
+                
+                // Don't modify the text, just count matches
+                if (findMatches(text, searchText, isCaseSensitive, isWholeWord)) {
+                    count++;
+                }
+            });
+            
+            findCount.textContent = count;
+        });
+        
+        replaceBtn.addEventListener('click', function() {
+            const searchText = findText.value;
+            const newText = replaceText.value;
+            if (!searchText) return;
+            
+            const isCaseSensitive = caseSensitive.checked;
+            const isWholeWord = wholeWord.checked;
+            
+            // Replace in the first match only
+            let replaced = false;
+            const textInputs = document.querySelectorAll('.text-input');
+            
+            for (let i = 0; i < textInputs.length; i++) {
+                const input = textInputs[i];
+                const text = input.value;
+                
+                if (!replaced && findMatches(text, searchText, isCaseSensitive, isWholeWord)) {
+                    input.value = replaceText(text, searchText, newText, isCaseSensitive, isWholeWord);
+                    input.focus();
+                    replaced = true;
+                    break;
+                }
+            }
+            
+            // Update find count
+            findBtn.click();
+        });
+        
+        replaceAllBtn.addEventListener('click', function() {
+            const searchText = findText.value;
+            const newText = replaceText.value;
+            if (!searchText) return;
+            
+            const isCaseSensitive = caseSensitive.checked;
+            const isWholeWord = wholeWord.checked;
+            
+            // Replace in all matches
+            document.querySelectorAll('.text-input').forEach(input => {
+                const text = input.value;
+                input.value = replaceText(text, searchText, newText, isCaseSensitive, isWholeWord);
+            });
+            
+            // Update find count
+            findBtn.click();
+        });
+        
+        function findMatches(text, search, isCaseSensitive, isWholeWord) {
+            if (!isCaseSensitive) {
+                text = text.toLowerCase();
+                search = search.toLowerCase();
+            }
+            
+            if (isWholeWord) {
+                const regex = new RegExp(`\\b${escapeRegExp(search)}\\b`, isCaseSensitive ? 'g' : 'gi');
+                return regex.test(text);
+            } else {
+                return text.includes(search);
+            }
+        }
+        
+        function replaceText(text, search, replace, isCaseSensitive, isWholeWord) {
+            if (isWholeWord) {
+                const regex = new RegExp(`\\b${escapeRegExp(search)}\\b`, isCaseSensitive ? 'g' : 'gi');
+                return text.replace(regex, replace);
+            } else {
+                if (!isCaseSensitive) {
+                    const regex = new RegExp(escapeRegExp(search), 'gi');
+                    return text.replace(regex, replace);
+                } else {
+                    return text.split(search).join(replace);
+                }
+            }
+        }
+        
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        
+        // Merge Speakers
+        const mergeSpeakersBtn = document.getElementById('merge-speakers-btn');
+        const mergeSpeakersModal = document.getElementById('merge-speakers-modal');
+        const mergeSpeakersClose = document.getElementById('merge-speakers-close');
+        const cancelMergeBtn = document.getElementById('cancel-merge-btn');
+        const confirmMergeBtn = document.getElementById('confirm-merge-btn');
+        const newSpeakerName = document.getElementById('new-speaker-name');
+        
+        mergeSpeakersBtn.addEventListener('click', function() {
+            mergeSpeakersModal.classList.add('open');
+        });
+        
+        mergeSpeakersClose.addEventListener('click', function() {
+            mergeSpeakersModal.classList.remove('open');
+        });
+        
+        cancelMergeBtn.addEventListener('click', function() {
+            mergeSpeakersModal.classList.remove('open');
+        });
+        
+        confirmMergeBtn.addEventListener('click', function() {
+            const selectedSpeakers = [];
+            document.querySelectorAll('.speaker-checkbox:checked').forEach(checkbox => {
+                selectedSpeakers.push(checkbox.value);
+            });
+            
+            if (selectedSpeakers.length < 2) {
+                alert('Please select at least 2 speakers to merge.');
+                return;
+            }
+            
+            const mergedName = newSpeakerName.value || selectedSpeakers[0];
+            
+            // Update all selected speakers to the new name
+            document.querySelectorAll('.speaker-input').forEach(input => {
+                if (selectedSpeakers.includes(input.value)) {
+                    input.value = mergedName;
+                }
+            });
+            
+            // Update data-speaker attributes
+            document.querySelectorAll('.segment-editor-item').forEach(item => {
+                if (selectedSpeakers.includes(item.dataset.speaker)) {
+                    item.dataset.speaker = mergedName;
+                }
+            });
+            
+            // Close modal and reset
+            mergeSpeakersModal.classList.remove('open');
+            document.querySelectorAll('.speaker-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            newSpeakerName.value = '';
+            
+            // Update speaker filter
+            updateSpeakerFilter();
+        });
+        
+        // Rename Speakers
+        const renameSpeakersBtn = document.getElementById('rename-speakers-btn');
+        const renameSpeakersModal = document.getElementById('rename-speakers-modal');
+        const renameSpeakersClose = document.getElementById('rename-speakers-close');
+        const cancelRenameBtn = document.getElementById('cancel-rename-btn');
+        const confirmRenameBtn = document.getElementById('confirm-rename-btn');
+        
+        renameSpeakersBtn.addEventListener('click', function() {
+            renameSpeakersModal.classList.add('open');
+        });
+        
+        renameSpeakersClose.addEventListener('click', function() {
+            renameSpeakersModal.classList.remove('open');
+        });
+        
+        cancelRenameBtn.addEventListener('click', function() {
+            renameSpeakersModal.classList.remove('open');
+        });
+        
+        confirmRenameBtn.addEventListener('click', function() {
+            const renames = {};
+            
+            document.querySelectorAll('.rename-input').forEach(input => {
+                const originalName = input.dataset.original;
+                const newName = input.value.trim();
+                
+                if (newName && newName !== originalName) {
+                    renames[originalName] = newName;
+                }
+            });
+            
+            // Apply renames
+            for (const [oldName, newName] of Object.entries(renames)) {
+                // Update input values
+                document.querySelectorAll('.speaker-input').forEach(input => {
+                    if (input.value === oldName) {
+                        input.value = newName;
+                    }
+                });
+                
+                // Update data-speaker attributes
+                document.querySelectorAll('.segment-editor-item').forEach(item => {
+                    if (item.dataset.speaker === oldName) {
+                        item.dataset.speaker = newName;
+                    }
+                });
+            }
+            
+            // Close modal
+            renameSpeakersModal.classList.remove('open');
+            
+            // Reset inputs
+            document.querySelectorAll('.rename-input').forEach(input => {
+                input.value = '';
+            });
+            
+            // Update speaker filter
+            updateSpeakerFilter();
+        });
+        
+        // Split Segment
+        const splitSegmentModal = document.getElementById('split-segment-modal');
+        const splitSegmentClose = document.getElementById('split-segment-close');
+        const segmentToSplit = document.getElementById('segment-to-split');
+        const splitPosition = document.getElementById('split-position');
+        const firstPartPreview = document.getElementById('first-part-preview');
+        const secondPartPreview = document.getElementById('second-part-preview');
+        const secondPartSpeaker = document.getElementById('second-part-speaker');
+        const newSpeakerGroup = document.getElementById('new-speaker-group');
+        const newSplitSpeaker = document.getElementById('new-split-speaker');
+        const cancelSplitBtn = document.getElementById('cancel-split-btn');
+        const confirmSplitBtn = document.getElementById('confirm-split-btn');
+        
+        // Add event listeners to split buttons
+        document.querySelectorAll('.split-segment').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                const textInput = document.querySelector(`.text-input[data-index="${index}"]`);
+                const speakerInput = document.querySelector(`.speaker-input[data-index="${index}"]`);
+                
+                // Set current text in the modal
+                const currentText = textInput.value;
+                segmentToSplit.textContent = currentText;
+                segmentToSplit.dataset.index = index;
+                segmentToSplit.dataset.speaker = speakerInput.value;
+                
+                // Reset split position
+                splitPosition.value = 50;
+                updateSplitPreviews(currentText, 50);
+                
+                // Show the modal
+                splitSegmentModal.classList.add('open');
+            });
+        });
+        
+        splitPosition.addEventListener('input', function() {
+            const text = segmentToSplit.textContent;
+            updateSplitPreviews(text, this.value);
+        });
+        
+        secondPartSpeaker.addEventListener('change', function() {
+            if (this.value === 'new') {
+                newSpeakerGroup.style.display = 'block';
+                newSplitSpeaker.required = true;
+            } else {
+                newSpeakerGroup.style.display = 'none';
+                newSplitSpeaker.required = false;
+            }
+        });
+        
+        splitSegmentClose.addEventListener('click', function() {
+            splitSegmentModal.classList.remove('open');
+        });
+        
+        cancelSplitBtn.addEventListener('click', function() {
+            splitSegmentModal.classList.remove('open');
+        });
+        
+        confirmSplitBtn.addEventListener('click', function() {
+            const index = parseInt(segmentToSplit.dataset.index);
+            const originalSpeaker = segmentToSplit.dataset.speaker;
+            
+            const firstPart = firstPartPreview.textContent;
+            const secondPart = secondPartPreview.textContent;
+            
+            // Get second part speaker
+            let secondSpeaker = originalSpeaker;
+            if (secondPartSpeaker.value === 'new') {
+                secondSpeaker = newSplitSpeaker.value || 'New Speaker';
+            } else if (secondPartSpeaker.value !== 'same') {
+                secondSpeaker = secondPartSpeaker.value;
+            }
+            
+            // Update the original segment with first part
+            const textInput = document.querySelector(`.text-input[data-index="${index}"]`);
+            textInput.value = firstPart;
+            
+            // Get segment item and segment data
+            const segmentItem = document.querySelector(`.segment-editor-item[data-index="${index}"]`);
+            const segmentData = transcriptionData[index];
+            
+            // Create new segment with second part
+            if (segmentData) {
+                // Calculate time split (roughly proportional to text length)
+                const totalDuration = segmentData.end_time - segmentData.start_time;
+                const splitRatio = firstPart.length / (firstPart.length + secondPart.length);
+                const splitTime = segmentData.start_time + (totalDuration * splitRatio);
+                
+                // Create new segment data
+                const newSegmentData = {
+                    speaker: secondSpeaker,
+                    start_time: splitTime,
+                    end_time: segmentData.end_time,
+                    text: secondPart
+                };
+                
+                // Update original segment end time
+                segmentData.end_time = splitTime;
+                segmentData.text = firstPart;
+                
+                // Insert new segment after current one
+                transcriptionData.splice(index + 1, 0, newSegmentData);
+                
+                // Create new segment element
+                const newSegment = createSegmentElement(newSegmentData, index + 1);
+                
+                // Insert after current segment
+                segmentItem.insertAdjacentElement('afterend', newSegment);
+                
+                // Update indexes of all subsequent segments
+                updateSegmentIndexes();
+            }
+            
+            // Close modal
+            splitSegmentModal.classList.remove('open');
+        });
+        
+        function updateSplitPreviews(text, positionPercent) {
+            const position = Math.floor(text.length * (positionPercent / 100));
+            
+            const firstPart = text.substring(0, position);
+            const secondPart = text.substring(position);
+            
+            firstPartPreview.textContent = firstPart;
+            secondPartPreview.textContent = secondPart;
+        }
+        
+        // Merge segments (up/down)
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('merge-up') || e.target.parentElement.classList.contains('merge-up')) {
+                const btn = e.target.classList.contains('merge-up') ? e.target : e.target.parentElement;
+                const index = parseInt(btn.dataset.index);
+                
+                if (index > 0) {
+                    mergeSegments(index - 1, index);
+                }
+            }
+            
+            if (e.target.classList.contains('merge-down') || e.target.parentElement.classList.contains('merge-down')) {
+                const btn = e.target.classList.contains('merge-down') ? e.target : e.target.parentElement;
+                const index = parseInt(btn.dataset.index);
+                
+                const nextIndex = index + 1;
+                const totalSegments = document.querySelectorAll('.segment-editor-item').length;
+                
+                if (nextIndex < totalSegments) {
+                    mergeSegments(index, nextIndex);
+                }
+            }
+        });
+        
+        function mergeSegments(index1, index2) {
+            // Get text inputs
+            const text1 = document.querySelector(`.text-input[data-index="${index1}"]`).value;
+            const text2 = document.querySelector(`.text-input[data-index="${index2}"]`).value;
+            
+            // Merge text
+            const mergedText = text1 + ' ' + text2;
+            
+            // Update first segment
+            document.querySelector(`.text-input[data-index="${index1}"]`).value = mergedText;
+            
+            // Remove second segment
+            const segment2 = document.querySelector(`.segment-editor-item[data-index="${index2}"]`);
+            segment2.remove();
+            
+            // Update data (if available)
+            if (transcriptionData.length > Math.max(index1, index2)) {
+                // Update end time of first segment to match end time of second
+                transcriptionData[index1].end_time = transcriptionData[index2].end_time;
+                transcriptionData[index1].text = mergedText;
+                
+                // Remove second segment from data
+                transcriptionData.splice(index2, 1);
+            }
+            
+            // Update indexes
+            updateSegmentIndexes();
+        }
+        
+        // Update segment indexes after adding/removing segments
+        function updateSegmentIndexes() {
+            document.querySelectorAll('.segment-editor-item').forEach((item, index) => {
+                item.dataset.index = index;
+                
+                // Update indexes in child elements
+                item.querySelectorAll('[data-index]').forEach(el => {
+                    el.dataset.index = index;
+                });
+                
+                // Update merge buttons
+                const mergeUp = item.querySelector('.merge-up');
+                const mergeDown = item.querySelector('.merge-down');
+                
+                if (mergeUp) {
+                    mergeUp.dataset.index = index;
+                    mergeUp.disabled = index === 0;
+                }
+                
+                if (mergeDown) {
+                    mergeDown.dataset.index = index;
+                    mergeDown.disabled = index === document.querySelectorAll('.segment-editor-item').length - 1;
+                }
+            });
+        }
+        
+        function createSegmentElement(segmentData, index) {
+            const div = document.createElement('div');
+            div.className = 'segment-editor-item';
+            div.dataset.index = index;
+            div.dataset.speaker = segmentData.speaker;
+            
+            const startTimeFormatted = formatTime(segmentData.start_time);
+            const endTimeFormatted = formatTime(segmentData.end_time);
+            
+            div.innerHTML = `
+                <div class="segment-editor-header">
+                    <div class="speaker-edit">
+                        <div class="speaker-avatar">
+                            <span>${segmentData.speaker[0].toUpperCase()}</span>
+                        </div>
+                        <input type="text" class="speaker-input form-control" 
+                               value="${segmentData.speaker}" 
+                               data-field="speaker" 
+                               data-index="${index}">
+                    </div>
+                    <div class="segment-time">
+                        ${startTimeFormatted} - ${endTimeFormatted}
+                    </div>
+                    <div class="segment-actions">
+                        <button type="button" class="action-btn merge-up" title="Merge with segment above" data-index="${index}" ${index === 0 ? 'disabled' : ''}>
+                            <i class="fas fa-arrow-up"></i>
+                        </button>
+                        <button type="button" class="action-btn merge-down" title="Merge with segment below" data-index="${index}" ${index === document.querySelectorAll('.segment-editor-item').length ? 'disabled' : ''}>
+                            <i class="fas fa-arrow-down"></i>
+                        </button>
+                        <button type="button" class="action-btn split-segment" title="Split segment" data-index="${index}">
+                            <i class="fas fa-cut"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="segment-editor-body">
+                    <textarea class="text-input form-control" 
+                              rows="3" 
+                              data-field="text" 
+                              data-index="${index}">${segmentData.text}</textarea>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Update speaker list in filter when speakers change
+        function updateSpeakerFilter() {
+            const speakerFilter = document.getElementById('speaker-filter');
+            const speakers = new Set();
+            
+            // Get all current speakers
+            document.querySelectorAll('.speaker-input').forEach(input => {
+                speakers.add(input.value);
+            });
+            
+            // Save current selection
+            const currentSelection = speakerFilter.value;
+            
+            // Clear current options (except "All")
+            while (speakerFilter.options.length > 1) {
+                speakerFilter.remove(1);
+            }
+            
+            // Add updated speaker options
+            speakers.forEach(speaker => {
+                const option = document.createElement('option');
+                option.value = speaker;
+                option.textContent = speaker;
+                speakerFilter.appendChild(option);
+            });
+            
+            // Restore selection if possible
+            if (Array.from(speakers).includes(currentSelection)) {
+                speakerFilter.value = currentSelection;
+            } else {
+                speakerFilter.value = 'all';
+            }
+        }
+        
+        // Form submission
+        const saveBtn = document.getElementById('save-btn');
+        const editForm = document.querySelector('.edit-form');
+        
+        editForm.addEventListener('submit', function(e) {
+            if (advancedEditor.classList.contains('active')) {
+                // Advanced mode - validate JSON
+                try {
+                    JSON.parse(rawContent.value);
+                    hideJsonError();
+                } catch (error) {
+                    e.preventDefault();
+                    showJsonError(error.message);
+                }
+            } else {
+                // Visual mode - update raw content from visual editor
+                e.preventDefault();
+                updateRawContent();
+                this.submit();
+            }
+        });
+        
+        function updateRawContent() {
+            // Get data from visual editor
+            const segments = [];
+            
+            document.querySelectorAll('.segment-editor-item').forEach((item, index) => {
+                const speaker = item.querySelector('.speaker-input').value;
+                const text = item.querySelector('.text-input').value;
+                
+                // If we have the original data, use its timestamps
+                let startTime = 0;
+                let endTime = 0;
+                
+                if (transcriptionData[index]) {
+                    startTime = transcriptionData[index].start_time;
+                    endTime = transcriptionData[index].end_time;
+                }
+                
+                segments.push({
+                    speaker: speaker,
+                    start_time: startTime,
+                    end_time: endTime,
+                    text: text
+                });
+            });
+            
+            rawContent.value = JSON.stringify(segments, null, 2);
+        }
+        
+        function updateVisualEditor(data) {
+            // Update transcription data
+            transcriptionData = data;
+            
+            // Clear current segments
+            const container = document.getElementById('segments-container');
+            container.innerHTML = '';
+            
+            // Create segments from data
+            data.forEach((segment, index) => {
+                const segmentElement = createSegmentElement(segment, index);
+                container.appendChild(segmentElement);
+            });
+            
+            // Update speaker filter
+            updateSpeakerFilter();
+        }
+        
+        function showJsonError(message) {
+            const errorElement = document.getElementById('json-error');
+            const errorMessage = document.getElementById('error-message');
+            
+            errorMessage.textContent = message;
+            errorElement.style.display = 'flex';
+        }
+        
+        function hideJsonError() {
+            document.getElementById('json-error').style.display = 'none';
+        }
+        
+        // Track changes to update speaker data attributes
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('speaker-input')) {
+                const item = e.target.closest('.segment-editor-item');
+                if (item) {
+                    item.dataset.speaker = e.target.value;
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

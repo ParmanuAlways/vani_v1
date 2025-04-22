@@ -1,0 +1,64 @@
+2025-04-22 05:11:35,782 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 05:11:35,782 - queue_manager - INFO - Queue processor thread started
+2025-04-22 05:12:20,786 - queue_manager - INFO - Processing file ca13ed26-7b44-4a54-8543-c61f4af7557b.wav (ID: 1)
+2025-04-22 05:12:38,727 - queue_manager - INFO - Successfully processed file ca13ed26-7b44-4a54-8543-c61f4af7557b.wav
+2025-04-22 05:13:03,729 - queue_manager - INFO - Processing file 45096589-26dd-4969-9a78-963e502f1f19.wav (ID: 2)
+2025-04-22 05:13:21,587 - queue_manager - INFO - Successfully processed file 45096589-26dd-4969-9a78-963e502f1f19.wav
+2025-04-22 05:51:45,167 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 05:52:05,000 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 05:52:05,000 - queue_manager - INFO - Queue processor thread started
+2025-04-22 05:55:55,894 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 05:56:16,552 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 05:56:16,553 - queue_manager - INFO - Queue processor thread started
+2025-04-22 05:57:15,162 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 05:57:43,616 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 05:57:43,617 - queue_manager - INFO - Queue processor thread started
+2025-04-22 06:10:48,650 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 06:14:28,769 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 06:14:28,769 - queue_manager - INFO - Queue processor thread started
+2025-04-22 06:18:32,692 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 06:26:14,219 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 06:26:14,219 - queue_manager - INFO - Queue processor thread started
+2025-04-22 06:26:49,223 - queue_manager - INFO - Processing file dde5efae-3531-4ecc-a560-9b0c8675b3a1.wav (ID: 3)
+2025-04-22 06:27:07,101 - speechbrain.utils.quirks - INFO - Applied quirks (see `speechbrain.utils.quirks`): [disable_jit_profiling, allow_tf32]
+2025-04-22 06:27:07,102 - speechbrain.utils.quirks - INFO - Excluded quirks specified by the `SB_DISABLE_QUIRKS` environment (comma-separated list): []
+2025-04-22 06:27:18,757 - queue_manager - INFO - Successfully processed file dde5efae-3531-4ecc-a560-9b0c8675b3a1.wav
+2025-04-22 07:10:25,241 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 07:10:33,843 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 07:10:33,843 - queue_manager - INFO - Queue processor thread started
+2025-04-22 07:35:25,427 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 10:07:20,252 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 10:07:20,252 - queue_manager - INFO - Queue processor thread started
+2025-04-22 10:07:55,256 - queue_manager - INFO - Processing file 09047a3b-be76-45bd-accd-7ede9a2a889a.wav (ID: 4)
+2025-04-22 10:08:12,981 - speechbrain.utils.quirks - INFO - Applied quirks (see `speechbrain.utils.quirks`): [allow_tf32, disable_jit_profiling]
+2025-04-22 10:08:12,981 - speechbrain.utils.quirks - INFO - Excluded quirks specified by the `SB_DISABLE_QUIRKS` environment (comma-separated list): []
+2025-04-22 10:08:24,564 - queue_manager - INFO - Successfully processed file 09047a3b-be76-45bd-accd-7ede9a2a889a.wav
+2025-04-22 10:27:07,804 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 10:30:01,123 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 10:30:01,123 - queue_manager - INFO - Queue processor thread started
+2025-04-22 10:32:56,138 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 10:33:52,028 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 10:33:52,028 - queue_manager - INFO - Queue processor thread started
+2025-04-22 10:40:47,439 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 10:41:07,073 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 10:41:07,074 - queue_manager - INFO - Queue processor thread started
+2025-04-22 10:42:22,080 - queue_manager - INFO - Processing file 1ffe79d7-238a-43c5-bb16-e6db218f6e6e.wav (ID: 5)
+2025-04-22 10:42:41,404 - speechbrain.utils.quirks - INFO - Applied quirks (see `speechbrain.utils.quirks`): [allow_tf32, disable_jit_profiling]
+2025-04-22 10:42:41,404 - speechbrain.utils.quirks - INFO - Excluded quirks specified by the `SB_DISABLE_QUIRKS` environment (comma-separated list): []
+2025-04-22 10:42:53,030 - queue_manager - INFO - Successfully processed file 1ffe79d7-238a-43c5-bb16-e6db218f6e6e.wav
+2025-04-22 12:01:12,608 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 12:01:37,025 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 12:01:37,025 - queue_manager - INFO - Queue processor thread started
+2025-04-22 12:02:48,557 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 12:03:08,392 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 12:03:08,392 - queue_manager - INFO - Queue processor thread started
+2025-04-22 12:06:36,388 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 12:06:57,860 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 12:06:57,860 - queue_manager - INFO - Queue processor thread started
+2025-04-22 12:09:37,873 - queue_manager - INFO - Processing file 0144cc0a-6416-4e6d-9ec8-7baba1b8501f.wav (ID: 6)
+2025-04-22 12:09:55,846 - speechbrain.utils.quirks - INFO - Applied quirks (see `speechbrain.utils.quirks`): [disable_jit_profiling, allow_tf32]
+2025-04-22 12:09:55,846 - speechbrain.utils.quirks - INFO - Excluded quirks specified by the `SB_DISABLE_QUIRKS` environment (comma-separated list): []
+2025-04-22 12:10:07,896 - queue_manager - INFO - Successfully processed file 0144cc0a-6416-4e6d-9ec8-7baba1b8501f.wav
+2025-04-22 12:35:08,346 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 12:35:08,346 - queue_manager - INFO - Queue processor thread started
+2025-04-22 12:44:24,650 - queue_manager - INFO - Queue processor stopping (will complete current file)
