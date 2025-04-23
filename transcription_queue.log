@@ -62,3 +62,12 @@
 2025-04-22 12:35:08,346 - queue_manager - INFO - Starting transcription queue processor
 2025-04-22 12:35:08,346 - queue_manager - INFO - Queue processor thread started
 2025-04-22 12:44:24,650 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-22 13:16:36,839 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 13:16:36,840 - queue_manager - INFO - Queue processor thread started
+2025-04-22 13:47:18,526 - queue_manager - INFO - Starting transcription queue processor
+2025-04-22 13:47:18,526 - queue_manager - INFO - Queue processor thread started
+2025-04-23 04:46:46,555 - queue_manager - INFO - Starting transcription queue processor
+2025-04-23 04:46:46,555 - queue_manager - INFO - Queue processor thread started
+2025-04-23 05:26:29,033 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-23 05:26:48,959 - queue_manager - INFO - Starting transcription queue processor
+2025-04-23 05:26:48,959 - queue_manager - INFO - Queue processor thread started
