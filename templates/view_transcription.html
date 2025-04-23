@@ -122,15 +122,6 @@
             <h2><i class="fas fa-microphone-alt"></i> Transcription with Speaker Diarization</h2>
             
             <div class="viewer-controls">
-                <div class="view-mode-toggle">
-                    <button class="toggle-btn active" data-mode="timeline">
-                        <i class="fas fa-stream"></i> Timeline
-                    </button>
-                    <button class="toggle-btn" data-mode="text">
-                        <i class="fas fa-align-left"></i> Text
-                    </button>
-                </div>
-                
                 <div class="speaker-filter">
                     <label for="filter-speaker">Speaker:</label>
                     <select id="filter-speaker" class="form-control">
@@ -144,107 +135,105 @@
                         {% endfor %}
                     </select>
                 </div>
+                
+                <div class="display-options">
+                    <label>
+                        <input type="checkbox" id="show-timestamps" checked> 
+                        Show Timestamps
+                    </label>
+                    <label>
+                        <input type="checkbox" id="group-by-speaker"> 
+                        Group by Speaker
+                    </label>
+                </div>
             </div>
         </div>
         
         <div class="viewer-content">
             {% if transcription and transcription.segments %}
-                <div class="speaker-timeline view-mode active" data-mode="timeline">
-                    <div class="timeline-controls">
-                        <div class="zoom-controls">
-                            <button class="zoom-out" title="Zoom out"><i class="fas fa-search-minus"></i></button>
-                            <div class="zoom-slider-container">
-                                <input type="range" class="zoom-slider" min="1" max="10" value="5">
-                            </div>
-                            <button class="zoom-in" title="Zoom in"><i class="fas fa-search-plus"></i></button>
-                        </div>
-                        
-                        <div class="color-palette">
-                            <button class="color-scheme-toggle" title="Toggle color scheme">
-                                <i class="fas fa-palette"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="timeline-container">
-                        <div class="timeline-header">
-                            <div class="timeline-scale">
-                                {% set total_duration = transcription.segments[-1].end_time if transcription.segments else 0 %}
-                                <div class="timeline-markers">
-                                    {% for i in range(0, (total_duration|int) + 1, 30) %}
-                                        <div class="time-marker" style="left: {{ (i / total_duration * 100) if total_duration > 0 else 0 }}%">
-                                            {{ "%02d:%02d"|format(i // 60, i % 60) }}
-                                        </div>
-                                    {% endfor %}
+                <div class="integrated-view">
+                    <!-- Timeline Section -->
+                    <div class="speaker-timeline">
+                        <div class="timeline-controls">
+                            <div class="zoom-controls">
+                                <button class="zoom-out" title="Zoom out"><i class="fas fa-search-minus"></i></button>
+                                <div class="zoom-slider-container">
+                                    <input type="range" class="zoom-slider" min="1" max="10" value="5">
                                 </div>
+                                <button class="zoom-in" title="Zoom in"><i class="fas fa-search-plus"></i></button>
                             </div>
-                        </div>
-                        
-                        <div class="speaker-rows">
-                            {% set speakers = [] %}
-                            {% for segment in transcription.segments %}
-                                {% if segment.speaker not in speakers %}
-                                    {% set _ = speakers.append(segment.speaker) %}
-                                {% endif %}
-                            {% endfor %}
                             
-                            {% for speaker in speakers %}
-                            <div class="speaker-row" data-speaker="{{ speaker }}">
-                                <div class="speaker-label">
-                                    <div class="speaker-avatar">
-                                        <span>{{ speaker[0].upper() }}</span>
-                                    </div>
-                                    <span>{{ speaker }}</span>
-                                </div>
-                                
-                                <div class="speaker-segments">
-                                    {% for segment in transcription.segments %}
-                                        {% if segment.speaker == speaker %}
-                                            {% set total_duration = transcription.segments[-1].end_time if transcription.segments else 0 %}
-                                            {% set segment_left = (segment.start_time / total_duration * 100) if total_duration > 0 else 0 %}
-                                            {% set segment_width = ((segment.end_time - segment.start_time) / total_duration * 100) if total_duration > 0 else 0 %}
-                                            
-                                            <div class="timeline-segment" 
-                                                style="left: {{ segment_left }}%; width: {{ segment_width }}%;"
-                                                data-start="{{ segment.start_time }}"
-                                                data-end="{{ segment.end_time }}"
-                                                data-text="{{ segment.text }}"
-                                                data-segment-id="{{ segment.start_time|replace('.', '-') }}"
-                                                onclick="highlightSegment('{{ segment.start_time }}')">
-                                                
-                                                <div class="segment-tooltip">
-                                                    <span class="tooltip-time">{{ "%02d:%02d"|format(segment.start_time // 60, segment.start_time % 60) }} - {{ "%02d:%02d"|format(segment.end_time // 60, segment.end_time % 60) }}</span>
-                                                    <span class="tooltip-text">{{ segment.text|truncate(50) }}</span>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
+                            <div class="color-palette">
+                                <button class="color-scheme-toggle" title="Toggle color scheme">
+                                    <i class="fas fa-palette"></i>
+                                </button>
                             </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="text-view view-mode" data-mode="text">
-                    <div class="text-view-controls">
-                        <div class="display-options">
-                            <label>
-                                <input type="checkbox" id="show-timestamps" checked> 
-                                Show Timestamps
-                            </label>
-                            <label>
-                                <input type="checkbox" id="group-by-speaker"> 
-                                Group by Speaker
-                            </label>
                         </div>
                         
-                        <div class="text-size-controls">
-                            <button class="text-size-decrease" title="Decrease text size"><i class="fas fa-font"></i> -</button>
-                            <button class="text-size-increase" title="Increase text size"><i class="fas fa-font"></i> +</button>
+                        <div class="timeline-container">
+                            <div class="timeline-header">
+                                <div class="timeline-scale">
+                                    {% set total_duration = transcription.segments[-1].end_time if transcription.segments else 0 %}
+                                    <div class="timeline-markers">
+                                        {% for i in range(0, (total_duration|int) + 1, 30) %}
+                                            <div class="time-marker" style="left: {{ (i / total_duration * 100) if total_duration > 0 else 0 }}%">
+                                                {{ "%02d:%02d"|format(i // 60, i % 60) }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="speaker-rows">
+                                {% set speakers = [] %}
+                                {% for segment in transcription.segments %}
+                                    {% if segment.speaker not in speakers %}
+                                        {% set _ = speakers.append(segment.speaker) %}
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% for speaker in speakers %}
+                                <div class="speaker-row" data-speaker="{{ speaker }}">
+                                    <div class="speaker-label">
+                                        <div class="speaker-avatar">
+                                            <span>{{ speaker[0].upper() }}</span>
+                                        </div>
+                                        <span>{{ speaker }}</span>
+                                    </div>
+                                    
+                                    <div class="speaker-segments">
+                                        {% for segment in transcription.segments %}
+                                            {% if segment.speaker == speaker %}
+                                                {% set total_duration = transcription.segments[-1].end_time if transcription.segments else 0 %}
+                                                {% set segment_left = (segment.start_time / total_duration * 100) if total_duration > 0 else 0 %}
+                                                {% set segment_width = ((segment.end_time - segment.start_time) / total_duration * 100) if total_duration > 0 else 0 %}
+                                                
+                                                <div class="timeline-segment" 
+                                                    style="left: {{ segment_left }}%; width: {{ segment_width }}%;"
+                                                    data-start="{{ segment.start_time }}"
+                                                    data-end="{{ segment.end_time }}"
+                                                    data-text="{{ segment.text }}"
+                                                    data-segment-id="{{ segment.start_time|replace('.', '-') }}"
+                                                    onclick="highlightSegment('{{ segment.start_time|replace('.', '-') }}')">
+                                                    
+                                                    <div class="segment-tooltip">
+                                                        <span class="tooltip-time">{{ "%02d:%02d"|format(segment.start_time // 60, segment.start_time % 60) }} - {{ "%02d:%02d"|format(segment.end_time // 60, segment.end_time % 60) }}</span>
+                                                        <span class="tooltip-text">{{ segment.text|truncate(50) }}</span>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                     
+                    <!-- Connection between timeline and text sections -->
+                    <div class="connection-line"></div>
+                    
+                    <!-- Text Section - Now visible simultaneously with timeline -->
                     <div class="segment-list" id="segment-list">
                         {% for segment in transcription.segments %}
                             <div class="segment" data-speaker="{{ segment.speaker }}" id="segment-{{ segment.start_time|replace('.', '-') }}">
@@ -375,43 +364,35 @@
         align-items: center;
     }
     
-    .view-mode-toggle {
+    .display-options {
         display: flex;
-        border-radius: var(--border-radius);
-        border: 1px solid var(--border-color);
-        overflow: hidden;
+        gap: 15px;
     }
     
-    .toggle-btn {
-        background: none;
-        border: none;
-        padding: 10px 15px;
-        cursor: pointer;
+    .display-options label {
         display: flex;
         align-items: center;
         gap: 5px;
-        color: var(--text-primary);
-    }
-    
-    .toggle-btn:not(:last-child) {
-        border-right: 1px solid var(--border-color);
-    }
-    
-    .toggle-btn.active {
-        background-color: var(--primary-color);
-        color: white;
+        font-size: var(--font-size-sm);
+        cursor: pointer;
     }
     
     .viewer-content {
         padding: 20px;
     }
     
-    .view-mode {
-        display: none;
+    /* Integrated view layout */
+    .integrated-view {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
     
-    .view-mode.active {
-        display: block;
+    .speaker-timeline {
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        background-color: var(--timeline-bg);
     }
     
     .timeline-controls {
@@ -434,11 +415,23 @@
         width: 100%;
     }
     
-    .timeline-container {
+    .zoom-in, .zoom-out, .color-scheme-toggle {
+        background-color: var(--card-header-bg);
         border: 1px solid var(--border-color);
         border-radius: var(--border-radius);
-        padding: 15px;
-        background-color: var(--timeline-bg);
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-secondary);
+        transition: all 0.2s;
+    }
+    
+    .zoom-in:hover, .zoom-out:hover, .color-scheme-toggle:hover {
+        color: var(--text-primary);
+        background-color: var(--primary-color);
     }
     
     .timeline-header {
@@ -533,6 +526,11 @@
         opacity: 1;
     }
     
+    .timeline-segment.active {
+        background-color: var(--highlight-color);
+        opacity: 1;
+    }
+    
     .segment-tooltip {
         position: absolute;
         background-color: var(--tooltip-bg);
@@ -571,6 +569,7 @@
         overflow: hidden;
     }
     
+    /* Segment list styles */
     .segment-list {
         display: flex;
         flex-direction: column;
@@ -578,6 +577,10 @@
         max-height: 500px;
         overflow-y: auto;
         padding-right: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        background-color: var(--card-bg);
     }
     
     .segment {
@@ -622,41 +625,86 @@
         gap: 5px;
     }
     
-    .segment-timestamp i {
-        font-size: 10px;
-    }
-    
     .segment-text {
         line-height: 1.5;
     }
     
-    .text-view-controls {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 15px;
-    }
-    
-    .display-options {
-        display: flex;
-        gap: 15px;
-    }
-    
-    .text-size-controls {
-        display: flex;
-        gap: 5px;
-    }
-    
-    .text-size-decrease,
-    .text-size-increase {
-        background: none;
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        width: 30px;
+    /* Visual connection between timeline and text */
+    .connection-line {
+        width: 2px;
+        background-color: var(--border-color);
         height: 30px;
-        display: flex;
+        margin: -15px auto 15px;
+    }
+    
+    /* Badge fixes for overlapping text */
+    .badge {
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: var(--font-size-xs);
+        font-weight: 500;
+        max-width: 180px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .badge:hover::after {
+        content: attr(title);
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--tooltip-bg);
+        color: var(--text-on-primary);
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        white-space: nowrap;
+        z-index: 10;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .viewer-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .viewer-controls {
+            width: 100%;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .display-options {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .speaker-filter {
+            width: 100%;
+        }
+        
+        .speaker-filter select {
+            width: 100%;
+        }
+        
+        .content-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
     }
 </style>
 {% endblock %}
@@ -664,24 +712,6 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Toggle between timeline and text view
-        const viewModeToggles = document.querySelectorAll('.toggle-btn');
-        viewModeToggles.forEach(toggle => {
-            toggle.addEventListener('click', function() {
-                const viewMode = this.getAttribute('data-mode');
-                
-                // Update toggle buttons
-                viewModeToggles.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Update view modes
-                document.querySelectorAll('.view-mode').forEach(mode => {
-                    mode.classList.remove('active');
-                });
-                document.querySelector(`.view-mode[data-mode="${viewMode}"]`).classList.add('active');
-            });
-        });
-        
         // Speaker filter functionality
         const filterSelect = document.getElementById('filter-speaker');
         if (filterSelect) {
@@ -716,6 +746,9 @@
         const zoomOut = document.querySelector('.zoom-out');
         
         if (zoomSlider && zoomIn && zoomOut) {
+            // Set initial zoom level
+            updateZoom(zoomSlider.value);
+            
             // Zoom slider
             zoomSlider.addEventListener('input', function() {
                 updateZoom(this.value);
@@ -732,15 +765,15 @@
                 zoomSlider.value = Math.max(parseInt(zoomSlider.value) - 1, 1);
                 updateZoom(zoomSlider.value);
             });
+        }
+        
+        function updateZoom(level) {
+            const timelineContainer = document.querySelector('.timeline-container');
+            timelineContainer.style.setProperty('--timeline-zoom', level);
             
-            function updateZoom(level) {
-                const timelineContainer = document.querySelector('.timeline-container');
-                timelineContainer.style.setProperty('--timeline-zoom', level);
-                
-                // Adjust width of the timeline container based on zoom level
-                const width = 100 + (level - 5) * 20; // 100% at level 5, +/- 20% per level
-                timelineContainer.style.width = `${width}%`;
-            }
+            // Adjust width of the timeline container based on zoom level
+            const width = 100 + (level - 5) * 20; // 100% at level 5, +/- 20% per level
+            timelineContainer.style.width = `${width}%`;
         }
         
         // Toggle color scheme
@@ -748,26 +781,6 @@
         if (colorSchemeToggle) {
             colorSchemeToggle.addEventListener('click', function() {
                 document.body.classList.toggle('alt-color-scheme');
-            });
-        }
-        
-        // Text size controls
-        const textSizeIncrease = document.querySelector('.text-size-increase');
-        const textSizeDecrease = document.querySelector('.text-size-decrease');
-        const segmentList = document.getElementById('segment-list');
-        
-        if (textSizeIncrease && textSizeDecrease && segmentList) {
-            // Default size
-            let currentSize = 16;
-            
-            textSizeIncrease.addEventListener('click', function() {
-                currentSize = Math.min(currentSize + 1, 24);
-                segmentList.style.fontSize = `${currentSize}px`;
-            });
-            
-            textSizeDecrease.addEventListener('click', function() {
-                currentSize = Math.max(currentSize - 1, 12);
-                segmentList.style.fontSize = `${currentSize}px`;
             });
         }
         
@@ -843,12 +856,50 @@
             });
         }
         
-        // Highlight timeline segments when clicked
+        // Connect timeline segments with text segments
         const timelineSegments = document.querySelectorAll('.timeline-segment');
-        timelineSegments.forEach(segment => {
-            segment.addEventListener('click', function() {
+        timelineSegments.forEach(timelineSegment => {
+            timelineSegment.addEventListener('click', function() {
+                // Remove active class from all timeline segments
+                timelineSegments.forEach(segment => {
+                    segment.classList.remove('active');
+                });
+                
+                // Add active class to clicked segment
+                this.classList.add('active');
+                
+                // Get segment ID
                 const segmentId = this.getAttribute('data-segment-id');
+                
+                // Highlight corresponding text segment
                 highlightSegment(segmentId);
+            });
+        });
+        
+        // Highlight text segment when clicking on timeline
+        const textSegments = document.querySelectorAll('.segment');
+        textSegments.forEach(segment => {
+            segment.addEventListener('click', function() {
+                // Get segment ID from the ID attribute
+                const segmentId = this.id.replace('segment-', '');
+                
+                // Find and highlight corresponding timeline segment
+                const timelineSegment = document.querySelector(`.timeline-segment[data-segment-id="${segmentId}"]`);
+                if (timelineSegment) {
+                    // Remove active class from all timeline segments
+                    timelineSegments.forEach(segment => {
+                        segment.classList.remove('active');
+                    });
+                    
+                    // Add active class to corresponding timeline segment
+                    timelineSegment.classList.add('active');
+                }
+                
+                // Add highlight to this segment
+                textSegments.forEach(s => {
+                    s.classList.remove('highlight');
+                });
+                this.classList.add('highlight');
             });
         });
         
@@ -874,6 +925,12 @@
                 }
             });
         }
+        
+        // Add title attributes to badges for tooltip functionality
+        document.querySelectorAll('.badge').forEach(badge => {
+            badge.setAttribute('title', badge.textContent.trim());
+            badge.style.position = 'relative';  // Ensure tooltip positioning works
+        });
     });
     
     // Function to highlight a segment
@@ -890,5 +947,6 @@
             segment.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
+   
 </script>
 {% endblock %}

@@ -1238,3 +1238,107 @@ textarea.form-control {
         gap: var(--spacing-sm);
     }
 }
+.card-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    z-index: 1;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+/* List view optimizations */
+.view-container.list-view .file-card {
+    align-items: center;
+    grid-template-columns: auto 1fr auto;
+    gap: 15px;
+    padding: 12px 15px;
+}
+
+.view-container.list-view .card-badge {
+    position: static;
+    margin-right: 0;
+    display: inline-block;
+    min-width: 120px;
+    text-align: center;
+}
+
+.view-container.list-view .card-header {
+    border-bottom: none;
+    padding: 0;
+}
+
+.view-container.list-view .card-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+
+/* Status badge tooltip for truncated text */
+.card-badge {
+    position: relative;
+}
+
+.card-badge:hover::after {
+    content: attr(data-full-status);
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--tooltip-bg);
+    color: var(--text-on-primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+/* Dashboard card improvements */
+.file-card, .approval-card {
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.1s;
+}
+
+.file-card:hover, .approval-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    background-color: var(--card-header-bg);
+}
+
+/* Better spacing for dashboard stats */
+.overview-stats {
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    height: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-value {
+    font-size: 28px;
+}
+
+/* Improved status indicators */
+.badge.submitted_fltcdr, .badge.submitted_co {
+    background-color: rgba(156, 89, 209, 0.15);
+    color: #9c59d1;
+}
+
+.badge.approved_fltcdr, .badge.approved_co {
+    background-color: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+}

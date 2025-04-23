@@ -399,5 +399,48 @@
             }
         }
     });
+
+        // Add this to the bottom of the script section in templates/dashboard.html
+
+    // Update status badges with full text attribute for tooltip
+    document.querySelectorAll('.card-badge').forEach(badge => {
+        // Store the full text as a data attribute for tooltip
+        const fullText = badge.textContent.trim();
+        badge.setAttribute('data-full-status', fullText);
+        
+        // If badge is in overflow, add tooltip class
+        if (badge.offsetWidth < badge.scrollWidth) {
+            badge.classList.add('truncated');
+        }
+    });
+
+    // Improve card interactions
+    document.querySelectorAll('.file-card, .approval-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.classList.add('card-hover');
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.classList.remove('card-hover');
+        });
+    });
+
+    // Make the entire card clickable to navigate to the primary action
+    document.querySelectorAll('.file-card, .approval-card').forEach(card => {
+        const primaryBtn = card.querySelector('.btn-primary');
+        
+        if (primaryBtn && primaryBtn.href) {
+            card.style.cursor = 'pointer';
+            
+            card.addEventListener('click', function(e) {
+                // Don't trigger if clicking on another button or link
+                if (e.target.closest('.btn') || e.target.closest('a')) {
+                    return;
+                }
+                
+                window.location.href = primaryBtn.href;
+            });
+        }
+    });
 </script>
 {% endblock %}
