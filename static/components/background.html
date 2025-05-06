@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cockpit Transcription Background</title>
+    <style>
+        body {
+            margin: 0;
+            background: #1a1a1a;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+        }
+        .background {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+        }
+        .grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 49px,
+                #0f0 50px
+            ),
+            repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 49px,
+                #0f0 50px
+            );
+            opacity: 0.1;
+            animation: scan 5s linear infinite;
+        }
+        .waveform {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            transform: translateY(-50%);
+        }
+        .status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 14px;
+            color: #0f0;
+            text-shadow: 0 0 5px #0f0;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes scan {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="grid"></div>
+        <canvas id="waveform" class="waveform"></canvas>
+        <div class="status">SYSTEM ACTIVE</div>
+    </div>
+    <script>
+        // Waveform canvas
+        const waveformCanvas = document.getElementById('waveform');
+        const waveformCtx = waveformCanvas.getContext('2d');
+
+        // Set canvas size
+        function resizeCanvas() {
+            waveformCanvas.width = window.innerWidth;
+            waveformCanvas.height = 300;
+        }
+        resizeCanvas();
+
+        // Particle system for waveform
+        class Particle {
+            constructor() {
+                this.x = Math.random() * waveformCanvas.width;
+                this.y = waveformCanvas.height / 2;
+                this.vx = (Math.random() - 0.5) * 4;
+                this.vy = (Math.random() - 0.5) * 4;
+                this.size = Math.random() * 4 + 3;
+                this.phase = Math.random() * Math.PI * 2;
+                // Assign random animation type
+                this.animationType = Math.floor(Math.random() * 3); // 0: Sinusoidal, 1: Pulsating, 2: Chaotic
+            }
+
+            update(time, orientation, amplitude) {
+                const angle = Math.sin(time * 0.1) * Math.PI / 4; // Vary orientation
+                const dynamicAmplitude = amplitude * (0.8 + 0.2 * Math.sin(time * 0.5));
+
+                // Different animation types
+                switch (this.animationType) {
+                    case 0: // Sinusoidal: Smooth wave motion
+                        this.y = waveformCanvas.height / 2 + Math.sin(this.x / 70 + time) * dynamicAmplitude * Math.cos(angle);
+                        this.x += this.vx * Math.cos(angle);
+                        this.y += this.vy + Math.sin(this.phase + time * 3) * 1.5 * Math.sin(angle);
+                        break;
+                    case 1: // Pulsating: Wave with size and amplitude pulsing
+                        this.y = waveformCanvas.height / 2 + Math.sin(this.x / 60 + time) * (dynamicAmplitude * (0.5 + 0.5 * Math.cos(time * 2)));
+                        this.x += this.vx * Math.cos(angle);
+                        this.size = (Math.random() * 4 + 3) * (0.8 + 0.2 * Math.sin(time * 2 + this.phase));
+                        break;
+                    case 2: // Chaotic: Erratic, jittery motion
+                        this.y = waveformCanvas.height / 2 + Math.sin(this.x / 80 + time) * dynamicAmplitude * Math.cos(angle) + (Math.random() - 0.5) * 20;
+                        this.x += this.vx * Math.cos(angle) + (Math.random() - 0.5) * 3;
+                        this.y += this.vy + Math.sin(this.phase + time * 4) * 2 * Math.sin(angle) + (Math.random() - 0.5) * 5;
+                        break;
+                }
+
+                // Wrap around edges
+                if (this.x < 0) this.x += waveformCanvas.width;
+                if (this.x > waveformCanvas.width) this.x -= waveformCanvas.width;
+                if (this.y < 0) this.y += waveformCanvas.height;
+                if (this.y > waveformCanvas.height) this.y -= waveformCanvas.height;
+            }
+
+            draw() {
+                waveformCtx.beginPath();
+                waveformCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                waveformCtx.fillStyle = `rgba(57, 255, 20, ${0.6 + Math.sin(this.phase) * 0.4})`; // Fluorescent green
+                waveformCtx.fill();
+            }
+        }
+
+        // Create particles
+        const particles = Array.from({ length: 600 }, () => new Particle());
+
+        // Animation loop
+        let time = 0;
+        function animate() {
+            waveformCtx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+
+            // Update and draw particles with variable amplitude
+            const amplitude = 100 + Math.sin(time * 0.3) * 50; // Variable amplitude
+            particles.forEach(particle => {
+                particle.update(time, Math.sin(time * 0.1), amplitude);
+                particle.draw();
+            });
+
+            time += 0.04;
+            requestAnimationFrame(animate);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', resizeCanvas);
+
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>
