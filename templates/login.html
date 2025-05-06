@@ -556,7 +556,7 @@
         }
         
         .quote-container blockquote::before {
-            content: """;
+            content: "";
             position: absolute;
             left: -15px;
             top: -5px;
@@ -590,6 +590,39 @@
             .account-cards {
                 flex-direction: column;
             }
+        }
+        .quote-container {
+            z-index: 3;
+            position: absolute;
+            min-height: 100px; /* Ensure container doesn't jump in height */
+        }
+
+        .rotating-quote {
+            position: relative;
+        }
+
+        .rotating-quote p {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease-in-out;
+            margin: 0;
+            font-size: var(--font-size-lg);
+            font-style: italic;
+            color: white;
+        }
+
+        .rotating-quote p.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .rotating-quote p.exit {
+            opacity: 0;
+            transform: translateY(-20px);
         }
     </style>
 </head>
@@ -678,8 +711,8 @@
                     </video>
                 </div>
                 <div class="quote-container">
-                    <blockquote>
-                        <p>"VANI makes voice transcription with speaker identification seamless and efficient."</p>
+                    <blockquote class="rotating-quote">
+                        <!-- Quotes will be dynamically added by JavaScript -->
                     </blockquote>
                 </div>
             </div>
@@ -689,6 +722,54 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Add ripple effect to buttons
+            const quotes = [
+                "VANI makes voice transcription with speaker identification seamless and efficient.",
+                "Transform your audio communications into organized, searchable transcripts with VANI.",
+                "Experience the power of AI-driven speaker diarization for military communications.",
+                "VANI: Turning voice data into actionable intelligence for military operations.",
+                "Secure, accurate, and efficient - VANI delivers military-grade transcription services.",
+                "From cockpit conversations to ground control - VANI captures it all with precision.",
+                "Streamline your military communications workflow with VANI's automated transcription."
+            ];
+
+            let currentQuoteIndex = 0;
+            const quoteElement = document.querySelector('.rotating-quote');
+            
+            // Create all quote paragraphs
+            quotes.forEach((quote, index) => {
+                const p = document.createElement('p');
+                p.textContent = quote;
+                if (index === 0) {
+                    p.classList.add('active');
+                }
+                quoteElement.appendChild(p);
+            });
+
+            // Function to rotate quotes
+            function rotateQuotes() {
+                const allQuotes = quoteElement.querySelectorAll('p');
+                const currentQuote = allQuotes[currentQuoteIndex];
+                
+                // Start exit animation
+                currentQuote.classList.add('exit');
+                currentQuote.classList.remove('active');
+                
+                // Move to next quote after exit animation
+                setTimeout(() => {
+                    currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+                    const nextQuote = allQuotes[currentQuoteIndex];
+                    
+                    // Remove exit class from old quote
+                    currentQuote.classList.remove('exit');
+                    
+                    // Show next quote
+                    nextQuote.classList.add('active');
+                }, 600); // Wait for exit animation to complete
+            }
+
+            // Start rotation timer (every 3 seconds)
+            setInterval(rotateQuotes, 6000);    
+
             const buttons = document.querySelectorAll('.btn');
             buttons.forEach(btn => {
                 btn.addEventListener('click', function(e) {
