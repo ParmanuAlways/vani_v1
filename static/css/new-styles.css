@@ -61,6 +61,8 @@
     --alt-primary-color: #6e48aa;
     --alt-secondary-color: #ff6b6b;
     --alt-accent-color: #48cfad;
+
+
 }
 
 /* Alternative color scheme */
@@ -1870,4 +1872,31 @@ textarea.form-control {
     font-family: 'Roboto Mono', monospace;
     font-size: 0.95rem; /* Increased from 0.8rem */
     letter-spacing: -0.5px;
+}
+
+.gif-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 2;
+}
+
+.cockpit-gif {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+    mix-blend-mode: screen;
+}
+
+.auth-image .overlay {
+    z-index: 1;
+    background-color: rgba(18, 22, 32, 0.7);
+}
+
+.quote-container {
+    z-index: 3;
 }

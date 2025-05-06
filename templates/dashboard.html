@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <div class="overview-stats">
+    <!-- <div class="overview-stats">
         <div class="stat-card">
             <div class="stat-icon">
                 <i class="fas fa-file-audio"></i>
@@ -29,8 +29,21 @@
             {% elif file.status == 'rejected' %}
                 {% set rejected_count = rejected_count + 1 %}
             {% endif %}
-        {% endfor %}
+        {% endfor %} -->
         
+        <!-- {% set pending_count = 0 %}
+        {% set approved_count = 0 %}
+        {% set rejected_count = 0 %}
+
+        {% for file in audio_files %}
+            {% if file.status == 'submitted_fltcdr' or file.status == 'submitted_co' %}
+                {% set pending_count = pending_count + 1 %}
+            {% elif file.status == 'approved_fltcdr' or file.status == 'approved_co' %}
+                {% set approved_count = approved_count + 1 %}
+            {% elif file.status == 'rejected' %}
+                {% set rejected_count = rejected_count + 1 %}
+            {% endif %}
+        {% endfor %} 
         <div class="stat-card">
             <div class="stat-icon">
                 <i class="fas fa-hourglass-half"></i>
@@ -60,7 +73,50 @@
                 <div class="stat-label">Rejected</div>
             </div>
         </div>
+    </div> -->
+
+    <div class="overview-stats">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-file-audio"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ audio_files|length }}</div>
+                <div class="stat-label">Total Uploads</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value" id="pending-count">0</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value" id="approved-count">0</div>
+                <div class="stat-label">Approved</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value" id="rejected-count">0</div>
+                <div class="stat-label">Rejected</div>
+            </div>
+        </div>
     </div>
+    
     
     {% if user.isPilot %}
     <div class="action-bar">
@@ -441,6 +497,31 @@
                 window.location.href = primaryBtn.href;
             });
         }
+    
+        const fileCards = document.querySelectorAll('.file-card');
+        let pendingCount = 0;
+        let approvedCount = 0;
+        let rejectedCount = 0;
+        
+        fileCards.forEach(card => {
+            const status = card.dataset.status;
+            
+            // Use the same logic as the working filters
+            if (status === 'submitted_fltcdr' || status === 'submitted_co' || 
+                status.includes('submitted')) {
+                pendingCount++;
+            } else if (status === 'approved_fltcdr' || status === 'approved_co' || 
+                       status.includes('approved')) {
+                approvedCount++;
+            } else if (status === 'rejected') {
+                rejectedCount++;
+            }
+        });
+        
+        // Update the stat values
+        document.getElementById('pending-count').textContent = pendingCount;
+        document.getElementById('approved-count').textContent = approvedCount;
+        document.getElementById('rejected-count').textContent = rejectedCount;
     });
 </script>
 {% endblock %}

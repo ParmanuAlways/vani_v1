@@ -257,3 +257,38 @@
 2025-05-06 05:22:26,540 - queue_manager - INFO - Starting transcription queue processor
 2025-05-06 05:22:26,540 - queue_manager - INFO - Queue processor thread started
 2025-05-06 05:28:33,169 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-06 06:27:38,246 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 06:27:38,246 - queue_manager - INFO - Queue processor thread started
+2025-05-06 06:31:02,505 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-06 06:31:24,540 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 06:31:24,540 - queue_manager - INFO - Queue processor thread started
+2025-05-06 07:15:57,632 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-06 07:16:18,986 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 07:16:18,987 - queue_manager - INFO - Queue processor thread started
+2025-05-06 07:19:18,217 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-06 07:19:39,524 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 07:19:39,524 - queue_manager - INFO - Queue processor thread started
+2025-05-06 08:54:45,975 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 08:54:45,976 - queue_manager - INFO - Queue processor thread started
+2025-05-06 09:54:32,678 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-06 09:54:53,198 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 09:54:53,198 - queue_manager - INFO - Queue processor thread started
+2025-05-06 09:59:14,453 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-06 09:59:35,364 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 09:59:35,364 - queue_manager - INFO - Queue processor thread started
+2025-05-06 10:07:44,717 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-06 10:08:05,229 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 10:08:05,230 - queue_manager - INFO - Queue processor thread started
+2025-05-06 10:45:09,845 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 10:45:09,845 - queue_manager - INFO - Queue processor thread started
+2025-05-06 10:45:36,195 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-06 10:46:25,515 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 10:46:25,516 - queue_manager - INFO - Queue processor thread started
+2025-05-06 10:49:35,379 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-06 10:49:55,784 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 10:49:55,784 - queue_manager - INFO - Queue processor thread started
+2025-05-06 11:22:35,610 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 11:22:35,611 - queue_manager - INFO - Queue processor thread started
+2025-05-06 11:34:09,665 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-06 11:34:34,663 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 11:34:34,663 - queue_manager - INFO - Queue processor thread started
