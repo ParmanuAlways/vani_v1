@@ -10,9 +10,18 @@ from pyannote.audio import Pipeline
 from typing import Dict, List, Tuple, Any, Optional
 
 # Initialize models globally
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "transcript_models")
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
+
 MODEL_NAME = "jlvdoorn/whisper-large-v3-atco2-asr"
-processor = WhisperProcessor.from_pretrained(MODEL_NAME)
-model = WhisperForConditionalGeneration.from_pretrained(MODEL_NAME)
+processor = WhisperProcessor.from_pretrained(MODEL_NAME, cache_dir=MODEL_DIR)
+model = WhisperForConditionalGeneration.from_pretrained(MODEL_NAME, cache_dir=MODEL_DIR)
+model = model.to(device)
+
+# processor = WhisperProcessor.from_pretrained(MODEL_NAME)
+# model = WhisperForConditionalGeneration.from_pretrained(MODEL_NAME)
 
 # Initialize pipeline as None
 pipeline = None

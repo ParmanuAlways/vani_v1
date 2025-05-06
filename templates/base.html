@@ -10,6 +10,7 @@
 </head>
 <body class="app-layout">
     <!-- Sidebar -->
+    <!-- Enhanced Sidebar Code - Replace the existing sidebar in base.html -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">
@@ -22,19 +23,39 @@
         </div>
         
         <div class="sidebar-content">
+            <!-- User Profile Summary -->
+            <div class="sidebar-user-profile">
+                <div class="user-avatar">
+                    <span>{{ user.name[0].upper() }}</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name">{{ user.name }}</div>
+                    <div class="user-role">
+                        {% if user.isPilot %}Pilot{% endif %}
+                        {% if user.isFltCdr %}Flight Commander{% endif %}
+                        {% if user.isCO %}Commanding Officer{% endif %}
+                    </div>
+                </div>
+            </div>
+                    
             <nav class="sidebar-nav">
                 <ul>
-                    <li>
-                        <a href="/dashboard" class="{% if request.url.path == '/dashboard' %}active{% endif %}">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link {% if request.url.path == '/dashboard' %}active{% endif %}">
+                            <div class="nav-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <span class="nav-text">Dashboard</span>
                         </a>
                     </li>
+                    
                     {% if user.isPilot %}
-                    <li>
-                        <a href="/upload" class="{% if request.url.path == '/upload' %}active{% endif %}">
-                            <i class="fas fa-upload"></i>
-                            <span>Upload Audio</span>
+                    <li class="nav-item">
+                        <a href="/upload" class="nav-link {% if request.url.path == '/upload' %}active{% endif %}">
+                            <div class="nav-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <span class="nav-text">Upload Audio</span>
                         </a>
                     </li>
                     {% endif %}
@@ -46,47 +67,129 @@
                     {% endif %}
                     
                     {% if user.isPilot %}
-                    <li>
-                        <a href="#" class="submenu-toggle {% if '/transcription/' in request.url.path %}open{% endif %}">
-                            <i class="fas fa-file-alt"></i>
-                            <span>My Transcriptions</span>
-                            <i class="fas fa-chevron-down submenu-icon"></i>
+                    <li class="nav-item has-submenu {% if '/transcription/' in request.url.path %}open{% endif %}">
+                        <a href="#" class="nav-link submenu-toggle">
+                            <div class="nav-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <span class="nav-text">My Transcriptions</span>
+                            <div class="submenu-indicator">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
                         </a>
                         <ul class="submenu {% if '/transcription/' in request.url.path %}open{% endif %}">
-                            <li><a href="#" class="filter-link" data-status="all">All</a></li>
-                            <li><a href="#" class="filter-link" data-status="transcribed">Ready for Approval</a></li>
-                            <li><a href="#" class="filter-link" data-status="submitted">Pending Approval</a></li>
-                            <li><a href="#" class="filter-link" data-status="approved">Approved</a></li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link filter-link" data-status="all">
+                                    <div class="submenu-icon">
+                                        <i class="fas fa-circle"></i>
+                                    </div>
+                                    <span>All Transcriptions</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link filter-link" data-status="transcribed">
+                                    <div class="submenu-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <span>Ready for Approval</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link filter-link" data-status="submitted">
+                                    <div class="submenu-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <span>Pending Approval</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link filter-link" data-status="approved">
+                                    <div class="submenu-icon">
+                                        <i class="fas fa-check-double"></i>
+                                    </div>
+                                    <span>Approved</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     {% endif %}
                     
                     {% if user.isFltCdr %}
-                    <li>
-                        <a href="#" class="submenu-toggle {% if '/approval/' in request.url.path %}open{% endif %}">
-                            <i class="fas fa-clipboard-check"></i>
-                            <span>Approvals</span>
-                            <i class="fas fa-chevron-down submenu-icon"></i>
+                    <li class="nav-item has-submenu {% if '/approval/' in request.url.path %}open{% endif %}">
+                        <a href="#" class="nav-link submenu-toggle">
+                            <div class="nav-icon">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <span class="nav-text">Approvals</span>
+                            <div class="submenu-indicator">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
                         </a>
                         <ul class="submenu {% if '/approval/' in request.url.path %}open{% endif %}">
-                            <li><a href="#" class="filter-link" data-status="pending">Pending</a></li>
-                            <li><a href="#" class="filter-link" data-status="approved">Approved</a></li>
-                            <li><a href="#" class="filter-link" data-status="rejected">Rejected</a></li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link filter-link" data-status="pending">
+                                    <div class="submenu-icon">
+                                        <i class="fas fa-hourglass-half"></i>
+                                    </div>
+                                    <span>Pending</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link filter-link" data-status="approved">
+                                    <div class="submenu-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <span>Approved</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link filter-link" data-status="rejected">
+                                    <div class="submenu-icon">
+                                        <i class="fas fa-times-circle"></i>
+                                    </div>
+                                    <span>Rejected</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     {% endif %}
                     
                     {% if user.isCO %}
-                    <li>
-                        <a href="#" class="submenu-toggle {% if '/approval/' in request.url.path %}open{% endif %}">
-                            <i class="fas fa-stamp"></i>
-                            <span>CO Approvals</span>
-                            <i class="fas fa-chevron-down submenu-icon"></i>
+                    <li class="nav-item has-submenu {% if '/approval/' in request.url.path %}open{% endif %}">
+                        <a href="#" class="nav-link submenu-toggle">
+                            <div class="nav-icon">
+                                <i class="fas fa-stamp"></i>
+                            </div>
+                            <span class="nav-text">CO Approvals</span>
+                            <div class="submenu-indicator">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
                         </a>
                         <ul class="submenu {% if '/approval/' in request.url.path %}open{% endif %}">
-                            <li><a href="#" class="filter-link" data-status="pending">Pending</a></li>
-                            <li><a href="#" class="filter-link" data-status="approved">Approved</a></li>
-                            <li><a href="#" class="filter-link" data-status="rejected">Rejected</a></li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link filter-link" data-status="pending">
+                                    <div class="submenu-icon">
+                                        <i class="fas fa-hourglass-half"></i>
+                                    </div>
+                                    <span>Pending</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link filter-link" data-status="approved">
+                                    <div class="submenu-icon">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <span>Approved</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link filter-link" data-status="rejected">
+                                    <div class="submenu-icon">
+                                        <i class="fas fa-times-circle"></i>
+                                    </div>
+                                    <span>Rejected</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     {% endif %}
@@ -94,14 +197,23 @@
                     <li class="nav-section">
                         <span class="nav-section-title">Settings</span>
                     </li>
-                    <li>
-                        <a href="/logout">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
+                    <li class="nav-item">
+                        <a href="/logout" class="nav-link">
+                            <div class="nav-icon">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </div>
+                            <span class="nav-text">Logout</span>
                         </a>
                     </li>
                 </ul>
             </nav>
+        </div>
+        
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            <div class="app-info">
+                <span class="app-version">VANI System</span>
+            </div>
         </div>
     </aside>
 
@@ -233,8 +345,143 @@
                 });
             }, 5000);
         });
+
+                // Enhanced Sidebar JavaScript - Add this to the scripts section in base.html
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const body = document.body;
+            const submenuToggles = document.querySelectorAll('.submenu-toggle');
+            
+            // Initialize sidebar state from localStorage if available
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                body.classList.add('sidebar-collapsed');
+            }
+            
+            // Toggle sidebar
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    body.classList.toggle('sidebar-collapsed');
+                    
+                    // Store sidebar state in localStorage
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                    
+                    // Update layout class
+                    if (window.innerWidth <= 768) {
+                        body.classList.toggle('sidebar-expanded');
+                    }
+                });
+            }
+            
+            // Submenu toggles
+            submenuToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Close other open submenus first
+                    const openToggles = document.querySelectorAll('.submenu-toggle.open');
+                    openToggles.forEach(openToggle => {
+                        if (openToggle !== this) {
+                            openToggle.classList.remove('open');
+                            const submenu = openToggle.nextElementSibling;
+                            if (submenu) submenu.classList.remove('open');
+                            const parentItem = openToggle.closest('.nav-item');
+                            if (parentItem) parentItem.classList.remove('open');
+                        }
+                    });
+                    
+                    // Toggle current submenu
+                    this.classList.toggle('open');
+                    const submenu = this.nextElementSibling;
+                    submenu.classList.toggle('open');
+                    
+                    // Toggle parent item open class
+                    const parentItem = this.closest('.nav-item');
+                    parentItem.classList.toggle('open');
+                });
+            });
+            
+            // Auto-close sidebar on mobile when clicking outside
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                    sidebar.classList.add('collapsed');
+                    body.classList.remove('sidebar-expanded');
+                }
+            });
+            
+            // Handle submenu overflow on small screens
+            function checkSubmenuOverflow() {
+                document.querySelectorAll('.submenu').forEach(submenu => {
+                    const rect = submenu.getBoundingClientRect();
+                    if (rect.bottom > window.innerHeight) {
+                        submenu.style.maxHeight = `${window.innerHeight - rect.top - 20}px`;
+                    } else {
+                        submenu.style.maxHeight = '';
+                    }
+                });
+            }
+            
+            // Check on resize and submenu toggle
+            window.addEventListener('resize', checkSubmenuOverflow);
+            submenuToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    setTimeout(checkSubmenuOverflow, 10);
+                });
+            });
+            
+            // Add active class to parent when submenu item is active
+            const currentPath = window.location.pathname;
+            const submenuLinks = document.querySelectorAll('.submenu-link');
+            
+            submenuLinks.forEach(link => {
+                // If the current URL matches the link href or contains status
+                if (link.getAttribute('href') === currentPath || 
+                    (link.dataset.status && currentPath.includes(link.dataset.status))) {
+                    link.classList.add('active');
+                    
+                    // Find parent submenu and toggle
+                    const submenu = link.closest('.submenu');
+                    const toggle = submenu.previousElementSibling;
+                    const navItem = toggle.closest('.nav-item');
+                    
+                    submenu.classList.add('open');
+                    toggle.classList.add('open');
+                    navItem.classList.add('open');
+                }
+            });
+            
+            // For mobile: add hover delay to show submenus when collapsed
+            if (sidebar.classList.contains('collapsed')) {
+                const navItems = document.querySelectorAll('.nav-item.has-submenu');
+                let hoverTimeout;
+                
+                navItems.forEach(item => {
+                    item.addEventListener('mouseenter', function() {
+                        if (sidebar.classList.contains('collapsed')) {
+                            clearTimeout(hoverTimeout);
+                            hoverTimeout = setTimeout(() => {
+                                this.querySelector('.submenu').classList.add('open');
+                            }, 200);
+                        }
+                    });
+                    
+                    item.addEventListener('mouseleave', function() {
+                        if (sidebar.classList.contains('collapsed')) {
+                            clearTimeout(hoverTimeout);
+                            hoverTimeout = setTimeout(() => {
+                                this.querySelector('.submenu').classList.remove('open');
+                            }, 200);
+                        }
+                    });
+                });
+            }
+        });
     </script>
     
     {% block scripts %}{% endblock %}
+    
 </body>
 </html>

@@ -86,10 +86,10 @@ def add_test_users(cursor):
         return f"{salt}${hashed}"
     
     users = [
-        ('10001', 'John Pilot', 'Alpha Squadron', hash_password('pilot123'), 1, 0, 0),
-        ('10002', 'Mike Commander', 'Alpha Squadron', hash_password('fltcdr123'), 0, 1, 0),
-        ('10003', 'Sarah Officer', 'Alpha Squadron', hash_password('co123'), 0, 0, 1),
-        ('10004', 'David Pilot', 'Beta Squadron', hash_password('pilot456'), 1, 0, 0)
+        ('10001', 'Wg Cdr Deepak Yadav', 'Alpha Squadron', hash_password('pilot123'), 1, 0, 0),
+        ('10002', 'Wg Cdr Deepak Prasad', 'Alpha Squadron', hash_password('fltcdr123'), 0, 1, 0),
+        ('10003', 'Gp Capt R Khandelwal', 'Alpha Squadron', hash_password('co123'), 0, 0, 1),
+        ('10004', 'Wg Cdr Ankit Joshi', 'Beta Squadron', hash_password('pilot456'), 1, 0, 0)
     ]
     
     for user in users:

@@ -2,38 +2,570 @@
 
 {% block title %}Upload Audio - VANI System{% endblock %}
 
-{% block header %}Upload Audio - VANI System{% endblock %}
+{% block header %}Upload Audio{% endblock %}
 
 {% block content %}
-<section class="upload-section">
-    <h2>Upload Audio File</h2>
-    <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
-        <div class="file-input-container">
-            <label for="audio-file">Select audio file:</label>
-            <input type="file" id="audio-file" name="audio_file" accept="audio/*" required>
+<div class="upload-container">
+    <!-- Main Upload Card -->
+    <div class="upload-card">
+        <div class="card-header">
+            <h3><i class="fas fa-cloud-upload-alt"></i> Upload Audio File</h3>
         </div>
-        
-        <div class="upload-info">
-            <p>Supported formats: WAV, MP3, FLAC, OGG</p>
-            <p class="note">Note: Processing may take a few minutes depending on the file size.</p>
-            <p class="note">Your file will be queued for processing, and you'll be notified when it's ready.</p>
+        <div class="card-body">
+            <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form" id="upload-form">
+                <div class="dropzone" id="dropzone">
+                    <input type="file" id="audio-file" name="audio_file" accept="audio/*" required class="file-input">
+                    <div class="dropzone-content">
+                        <div class="upload-icon">
+                            <i class="fas fa-microphone-alt"></i>
+                        </div>
+                        <div class="upload-text">
+                            <h4>Drag & drop your audio file here</h4>
+                            <p>or click to browse files</p>
+                        </div>
+                        <div class="supported-formats">
+                            <span>Supported formats: WAV, MP3, FLAC, OGG</span>
+                        </div>
+                    </div>
+                    <div class="file-preview" id="file-preview">
+                        <div class="file-info">
+                            <div class="file-icon">
+                                <i class="fas fa-file-audio"></i>
+                            </div>
+                            <div class="file-details">
+                                <div class="file-name" id="file-name"></div>
+                                <div class="file-meta">
+                                    <span class="file-size" id="file-size"></span>
+                                    <span class="file-type" id="file-type"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="file-remove" id="remove-file">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="upload-notes">
+                    <div class="note">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Processing may take a few minutes depending on the file size and complexity.</span>
+                    </div>
+                    <div class="note">
+                        <i class="fas fa-server"></i>
+                        <span>Your file will be queued for processing, and you'll be notified when it's ready.</span>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="/dashboard" class="btn btn-outline">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                    <button type="submit" class="btn btn-primary" id="upload-button">
+                        <i class="fas fa-upload"></i> Upload Audio
+                    </button>
+                </div>
+            </form>
         </div>
-        
-        <button type="submit" class="upload-button button primary">
-            <span>Upload Audio</span>
-        </button>
-    </form>
-</section>
+    </div>
+    
+    <!-- Workflow Info Card -->
+    <div class="workflow-card">
+        <div class="card-header">
+            <h3><i class="fas fa-route"></i> Transcription Workflow</h3>
+        </div>
+        <div class="card-body">
+            <div class="workflow-steps">
+                <div class="workflow-step">
+                    <div class="step-icon">
+                        <i class="fas fa-upload"></i>
+                        <div class="step-number">1</div>
+                    </div>
+                    <div class="step-content">
+                        <h4>Upload</h4>
+                        <p>Upload your audio file to the system</p>
+                    </div>
+                </div>
+                
+                <div class="workflow-step">
+                    <div class="step-icon">
+                        <i class="fas fa-robot"></i>
+                        <div class="step-number">2</div>
+                    </div>
+                    <div class="step-content">
+                        <h4>Automatic Processing</h4>
+                        <p>The system transcribes your audio and identifies speakers</p>
+                    </div>
+                </div>
+                
+                <div class="workflow-step">
+                    <div class="step-icon">
+                        <i class="fas fa-edit"></i>
+                        <div class="step-number">3</div>
+                    </div>
+                    <div class="step-content">
+                        <h4>Review & Edit</h4>
+                        <p>Review and make any necessary edits to the transcription</p>
+                    </div>
+                </div>
+                
+                <div class="workflow-step">
+                    <div class="step-icon">
+                        <i class="fas fa-paper-plane"></i>
+                        <div class="step-number">4</div>
+                    </div>
+                    <div class="step-content">
+                        <h4>Submit for Approval</h4>
+                        <p>Submit to your Flight Commander for review</p>
+                    </div>
+                </div>
+                
+                <div class="workflow-step">
+                    <div class="step-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                        <div class="step-number">5</div>
+                    </div>
+                    <div class="step-content">
+                        <h4>Commander Approval</h4>
+                        <p>Flight Commander reviews and approves transcription</p>
+                    </div>
+                </div>
+                
+                <div class="workflow-step">
+                    <div class="step-icon">
+                        <i class="fas fa-stamp"></i>
+                        <div class="step-number">6</div>
+                    </div>
+                    <div class="step-content">
+                        <h4>CO Final Approval</h4>
+                        <p>Commanding Officer provides final approval</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-<section class="workflow-info">
-    <h3>Transcription Workflow</h3>
-    <ol>
-        <li>Upload your audio file</li>
-        <li>The system will automatically transcribe and identify speakers</li>
-        <li>Review and edit the transcription if needed</li>
-        <li>Submit for approval to your Flight Commander</li>
-        <li>Once approved by Flight Commander, it will be sent to the Commanding Officer</li>
-        <li>After CO approval, the transcription is finalized</li>
-    </ol>
-</section>
+{% block head %}
+<style>
+    .upload-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    @media (min-width: 992px) {
+        .upload-container {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+    
+    .upload-card, .workflow-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        height: fit-content;
+    }
+    
+    .card-header {
+        padding: var(--spacing-md) var(--spacing-lg);
+        border-bottom: 1px solid var(--border-color);
+        background-color: var(--card-header-bg);
+    }
+    
+    .card-header h3 {
+        margin: 0;
+        font-size: var(--font-size-lg);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+    
+    .card-body {
+        padding: var(--spacing-lg);
+    }
+    
+    /* Dropzone styles */
+    .dropzone {
+        position: relative;
+        border: 2px dashed var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: var(--spacing-lg);
+        background-color: var(--input-bg);
+    }
+    
+    .dropzone:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(79, 140, 255, 0.05);
+    }
+    
+    .dropzone.drag-over {
+        border-color: var(--primary-color);
+        background-color: rgba(79, 140, 255, 0.1);
+    }
+    
+    .file-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 10;
+    }
+    
+    .dropzone-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .upload-icon {
+        font-size: 48px;
+        color: var(--primary-color);
+        opacity: 0.8;
+        animation: pulse 2s infinite;
+        margin-bottom: 10px;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); opacity: 0.8; }
+    }
+    
+    .upload-text h4 {
+        margin: 0 0 5px 0;
+    }
+    
+    .upload-text p {
+        margin: 0;
+        color: var(--text-secondary);
+    }
+    
+    .supported-formats {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+        margin-top: 5px;
+        padding: 5px 10px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+    }
+    
+    /* File Preview */
+    .file-preview {
+        display: none;
+        background-color: var(--segment-bg);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-top: 20px;
+    }
+    
+    .file-preview.visible {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .file-icon {
+        background-color: var(--primary-color);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+    
+    .file-details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .file-name {
+        font-weight: 500;
+        margin-bottom: 5px;
+        word-break: break-all;
+    }
+    
+    .file-meta {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+    }
+    
+    .file-meta span:not(:last-child)::after {
+        content: '•';
+        margin: 0 5px;
+    }
+    
+    .file-remove {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: var(--error-color);
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .file-remove:hover {
+        background-color: rgba(231, 76, 60, 0.2);
+    }
+    
+    /* Notes */
+    .upload-notes {
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .note {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+        font-size: var(--font-size-sm);
+    }
+    
+    .note i {
+        color: var(--accent-color);
+        margin-top: 3px;
+    }
+    
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    
+    /* Workflow Steps */
+    .workflow-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .workflow-step {
+        display: flex;
+        gap: 20px;
+        position: relative;
+    }
+    
+    .workflow-step:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 40px;
+        left: 19px;
+        width: 2px;
+        height: calc(100% + 10px);
+        background-color: var(--border-color);
+    }
+    
+    .step-icon {
+        width: 40px;
+        height: 40px;
+        background-color: var(--card-header-bg);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        flex-shrink: 0;
+        font-size: 18px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .step-number {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        width: 18px;
+        height: 18px;
+        background-color: var(--accent-color);
+        color: var(--bg-main);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+    }
+    
+    .step-content h4 {
+        margin: 0 0 5px 0;
+    }
+    
+    .step-content p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: var(--font-size-sm);
+    }
+    
+    /* Loading State */
+    .upload-button.loading {
+        position: relative;
+        pointer-events: none;
+    }
+    
+    .upload-button.loading .loading-spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+        margin-left: 8px;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('audio-file');
+        const filePreview = document.getElementById('file-preview');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+        const fileType = document.getElementById('file-type');
+        const removeFileBtn = document.getElementById('remove-file');
+        const uploadForm = document.getElementById('upload-form');
+        const uploadButton = document.getElementById('upload-button');
+        
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        // Highlight dropzone when drag over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropzone.classList.add('drag-over');
+        }
+        
+        function unhighlight() {
+            dropzone.classList.remove('drag-over');
+        }
+        
+        // Handle dropped files
+        dropzone.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                fileInput.files = files;
+                updateFilePreview(files[0]);
+            }
+        }
+        
+        // Handle selected files from input
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                updateFilePreview(this.files[0]);
+            }
+        });
+        
+        // Update file preview
+        function updateFilePreview(file) {
+            // Display file information
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileType.textContent = file.type || getFileExtension(file.name);
+            
+            // Show the preview
+            filePreview.classList.add('visible');
+            
+            // Hide the dropzone content
+            document.querySelector('.dropzone-content').style.display = 'none';
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Get file extension
+        function getFileExtension(filename) {
+            return filename.slice((filename.lastIndexOf('.') - 1 >>> 0) + 2);
+        }
+        
+        // Remove selected file
+        removeFileBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            filePreview.classList.remove('visible');
+            document.querySelector('.dropzone-content').style.display = 'flex';
+        });
+        
+        // Form submission - show loading state
+        uploadForm.addEventListener('submit', function() {
+            // Check if a file is selected
+            if (!fileInput.files || !fileInput.files[0]) {
+                return false;
+            }
+            
+            // Validate file type
+            const file = fileInput.files[0];
+            const fileExt = getFileExtension(file.name).toLowerCase();
+            const allowedExts = ['wav', 'mp3', 'flac', 'ogg'];
+            
+            if (!allowedExts.includes(fileExt)) {
+                alert('Please select a valid audio file (WAV, MP3, FLAC, or OGG)');
+                return false;
+            }
+            
+            // Show loading state
+            uploadButton.classList.add('loading');
+            uploadButton.innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> Uploading...`;
+            uploadButton.disabled = true;
+            
+            return true;
+        });
+    });
+</script>
 {% endblock %}

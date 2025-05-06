@@ -1392,6 +1392,34 @@
             }
         });
         
+        // function updateRawContent() {
+        //     // Get data from visual editor
+        //     const segments = [];
+            
+        //     document.querySelectorAll('.segment-editor-item').forEach((item, index) => {
+        //         const speaker = item.querySelector('.speaker-input').value;
+        //         const text = item.querySelector('.text-input').value;
+                
+        //         // If we have the original data, use its timestamps
+        //         let startTime = 0;
+        //         let endTime = 0;
+                
+        //         if (transcriptionData[index]) {
+        //             startTime = transcriptionData[index].start_time;
+        //             endTime = transcriptionData[index].end_time;
+        //         }
+                
+        //         segments.push({
+        //             speaker: speaker,now 
+        //             start_time: startTime,
+        //             end_time: endTime,
+        //             text: text
+        //         });
+        //     });
+            
+        //     rawContent.value = JSON.stringify(segments, null, 2);
+        // }
+
         function updateRawContent() {
             // Get data from visual editor
             const segments = [];
@@ -1417,7 +1445,21 @@
                 });
             });
             
-            rawContent.value = JSON.stringify(segments, null, 2);
+            const jsonContent = JSON.stringify(segments, null, 2);
+            rawContent.value = jsonContent;
+            
+            // Check if there's already a hidden input field for content
+            let contentField = document.querySelector('input[name="content"]');
+            if (!contentField) {
+                // Create a hidden input if it doesn't exist
+                contentField = document.createElement('input');
+                contentField.type = 'hidden';
+                contentField.name = 'content';
+                editForm.appendChild(contentField);
+            }
+            
+            // Update the hidden input value
+            contentField.value = jsonContent;
         }
         
         function updateVisualEditor(data) {

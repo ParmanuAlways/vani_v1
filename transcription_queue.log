@@ -86,3 +86,174 @@
 2025-04-23 06:04:54,813 - queue_manager - INFO - Queue processor stopping (will complete current file)
 2025-04-23 06:08:14,589 - queue_manager - INFO - Starting transcription queue processor
 2025-04-23 06:08:14,589 - queue_manager - INFO - Queue processor thread started
+2025-04-23 06:19:37,067 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-23 06:19:57,382 - queue_manager - INFO - Starting transcription queue processor
+2025-04-23 06:19:57,382 - queue_manager - INFO - Queue processor thread started
+2025-04-23 06:20:42,386 - queue_manager - INFO - Processing file 8d0fcc68-bda3-456e-bc17-c8afc7859221.wav (ID: 7)
+2025-04-23 06:21:00,355 - speechbrain.utils.quirks - INFO - Applied quirks (see `speechbrain.utils.quirks`): [allow_tf32, disable_jit_profiling]
+2025-04-23 06:21:00,355 - speechbrain.utils.quirks - INFO - Excluded quirks specified by the `SB_DISABLE_QUIRKS` environment (comma-separated list): []
+2025-04-23 06:21:12,379 - queue_manager - INFO - Successfully processed file 8d0fcc68-bda3-456e-bc17-c8afc7859221.wav
+2025-04-23 07:25:02,009 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-23 07:25:22,439 - queue_manager - INFO - Starting transcription queue processor
+2025-04-23 07:25:22,439 - queue_manager - INFO - Queue processor thread started
+2025-04-28 06:37:03,775 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 06:37:03,775 - queue_manager - INFO - Queue processor thread started
+2025-04-28 06:38:18,782 - queue_manager - INFO - Processing file ca4d6f19-8e5b-4cbb-a290-1141b1de4fd0.wav (ID: 8)
+2025-04-28 06:42:29,481 - speechbrain.utils.quirks - INFO - Applied quirks (see `speechbrain.utils.quirks`): [allow_tf32, disable_jit_profiling]
+2025-04-28 06:42:29,481 - speechbrain.utils.quirks - INFO - Excluded quirks specified by the `SB_DISABLE_QUIRKS` environment (comma-separated list): []
+2025-04-28 06:46:09,434 - queue_manager - INFO - Successfully processed file ca4d6f19-8e5b-4cbb-a290-1141b1de4fd0.wav
+2025-04-28 09:36:59,213 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 09:36:59,213 - queue_manager - INFO - Queue processor thread started
+2025-04-28 09:37:49,218 - queue_manager - INFO - Processing file d14f62f9-1985-40af-bb08-f14bc9029029.wav (ID: 9)
+2025-04-28 09:40:09,295 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 09:40:17,840 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 09:40:17,840 - queue_manager - INFO - Queue processor thread started
+2025-04-28 09:40:22,550 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 09:40:31,655 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 09:40:31,655 - queue_manager - INFO - Queue processor thread started
+2025-04-28 09:40:37,267 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 09:40:53,619 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 09:40:53,619 - queue_manager - INFO - Queue processor thread started
+2025-04-28 09:41:22,270 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 09:45:38,890 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 09:45:38,890 - queue_manager - INFO - Queue processor thread started
+2025-04-28 09:47:18,898 - queue_manager - INFO - Processing file 3a7dccfb-c024-444b-b53d-79fc3168725d.wav (ID: 10)
+2025-04-28 09:49:46,398 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 09:49:55,709 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 09:49:55,709 - queue_manager - INFO - Queue processor thread started
+2025-04-28 15:01:29,969 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 15:01:29,969 - queue_manager - INFO - Queue processor thread started
+2025-04-28 15:05:34,988 - queue_manager - INFO - Processing file 38e690fc-ac7f-4a93-bbe9-cd361d35e8c0.wav (ID: 11)
+2025-04-28 15:10:05,717 - speechbrain.utils.quirks - INFO - Applied quirks (see `speechbrain.utils.quirks`): [disable_jit_profiling, allow_tf32]
+2025-04-28 15:10:05,717 - speechbrain.utils.quirks - INFO - Excluded quirks specified by the `SB_DISABLE_QUIRKS` environment (comma-separated list): []
+2025-04-28 15:14:11,149 - queue_manager - INFO - Successfully processed file 38e690fc-ac7f-4a93-bbe9-cd361d35e8c0.wav
+2025-04-28 15:29:56,228 - queue_manager - INFO - Processing file eb85e1fa-90df-4725-82db-49faa07c1e55.wav (ID: 12)
+2025-04-28 15:30:50,130 - queue_manager - INFO - Successfully processed file eb85e1fa-90df-4725-82db-49faa07c1e55.wav
+2025-04-28 15:53:50,247 - queue_manager - INFO - Processing file 07a2627c-5c54-4d53-a410-0b59e2e81536.wav (ID: 13)
+2025-04-28 15:57:25,951 - queue_manager - INFO - Successfully processed file 07a2627c-5c54-4d53-a410-0b59e2e81536.wav
+2025-04-28 16:00:55,407 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:01:20,126 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:01:20,126 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:01:20,428 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:01:29,439 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:01:29,439 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:02:04,442 - queue_manager - INFO - Processing file 43a3179e-df95-4d5c-a568-ecf80574feec.wav (ID: 14)
+2025-04-28 16:03:14,024 - speechbrain.utils.quirks - INFO - Applied quirks (see `speechbrain.utils.quirks`): [disable_jit_profiling, allow_tf32]
+2025-04-28 16:03:14,024 - speechbrain.utils.quirks - INFO - Excluded quirks specified by the `SB_DISABLE_QUIRKS` environment (comma-separated list): []
+2025-04-28 16:04:06,269 - queue_manager - INFO - Successfully processed file 43a3179e-df95-4d5c-a568-ecf80574feec.wav
+2025-04-28 16:14:46,059 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:15:06,340 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:15:06,340 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:16:24,901 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:17:14,133 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:17:14,133 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:20:47,017 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:21:01,526 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:21:01,526 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:22:51,425 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:23:07,582 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:23:07,582 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:23:40,944 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:24:03,866 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:24:03,866 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:24:36,321 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:24:46,598 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:24:46,598 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:26:30,877 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:26:42,259 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:26:42,259 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:29:21,643 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:29:30,804 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:29:30,804 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:31:03,374 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:31:16,153 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:31:16,153 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:32:00,238 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:32:11,791 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:32:11,791 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:32:51,062 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:33:00,188 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:33:00,188 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:35:14,332 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:35:23,964 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:35:23,964 - queue_manager - INFO - Queue processor thread started
+2025-04-28 16:45:58,185 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 16:46:46,680 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 16:46:46,680 - queue_manager - INFO - Queue processor thread started
+2025-04-28 17:02:14,259 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 17:02:39,854 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 17:02:39,854 - queue_manager - INFO - Queue processor thread started
+2025-04-28 17:03:44,877 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 17:04:14,404 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 17:04:14,404 - queue_manager - INFO - Queue processor thread started
+2025-04-28 17:08:27,563 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 17:08:27,563 - queue_manager - INFO - Queue processor thread started
+2025-04-28 17:13:17,888 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 17:13:43,963 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 17:13:43,963 - queue_manager - INFO - Queue processor thread started
+2025-04-28 17:18:39,988 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 17:19:00,978 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 17:19:00,978 - queue_manager - INFO - Queue processor thread started
+2025-04-28 17:23:11,220 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 17:23:31,575 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 17:23:31,575 - queue_manager - INFO - Queue processor thread started
+2025-04-28 17:49:25,149 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 17:50:28,316 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 17:50:28,317 - queue_manager - INFO - Queue processor thread started
+2025-04-28 17:56:33,347 - queue_manager - ERROR - Queue processor error: no such table: AudioFiles
+2025-04-28 17:56:41,325 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 17:57:09,246 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 17:57:09,246 - queue_manager - INFO - Queue processor thread started
+2025-04-28 17:57:09,247 - queue_manager - ERROR - Queue processor error: no such table: AudioFiles
+2025-04-28 17:57:19,247 - queue_manager - ERROR - Queue processor error: no such table: AudioFiles
+2025-04-28 17:57:29,248 - queue_manager - ERROR - Queue processor error: no such table: AudioFiles
+2025-04-28 17:57:39,248 - queue_manager - ERROR - Queue processor error: no such table: AudioFiles
+2025-04-28 17:57:49,249 - queue_manager - ERROR - Queue processor error: no such table: AudioFiles
+2025-04-28 17:57:59,249 - queue_manager - ERROR - Queue processor error: no such table: AudioFiles
+2025-04-28 17:58:09,250 - queue_manager - ERROR - Queue processor error: no such table: AudioFiles
+2025-04-28 17:58:19,250 - queue_manager - ERROR - Queue processor error: no such table: AudioFiles
+2025-04-28 17:58:29,250 - queue_manager - ERROR - Queue processor error: no such table: AudioFiles
+2025-04-28 17:58:39,251 - queue_manager - ERROR - Queue processor error: no such table: AudioFiles
+2025-04-28 17:58:45,020 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 17:59:25,424 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 17:59:25,424 - queue_manager - INFO - Queue processor thread started
+2025-04-28 18:16:55,780 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 18:21:34,122 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 18:21:34,122 - queue_manager - INFO - Queue processor thread started
+2025-04-28 18:21:58,866 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 18:24:09,898 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 18:24:09,898 - queue_manager - INFO - Queue processor thread started
+2025-04-28 18:34:34,410 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 18:34:55,002 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 18:34:55,002 - queue_manager - INFO - Queue processor thread started
+2025-04-28 18:36:14,545 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 18:36:36,097 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 18:36:36,098 - queue_manager - INFO - Queue processor thread started
+2025-04-28 18:50:07,094 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 18:50:33,386 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 18:50:33,386 - queue_manager - INFO - Queue processor thread started
+2025-04-28 18:57:54,476 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 18:58:16,083 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 18:58:16,083 - queue_manager - INFO - Queue processor thread started
+2025-04-28 18:59:54,059 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 19:00:22,574 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 19:00:22,574 - queue_manager - INFO - Queue processor thread started
+2025-04-28 19:02:22,917 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 19:02:42,458 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 19:02:42,458 - queue_manager - INFO - Queue processor thread started
+2025-04-28 19:10:18,867 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 19:11:20,692 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 19:11:20,692 - queue_manager - INFO - Queue processor thread started
+2025-04-28 19:13:32,644 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-28 19:13:54,637 - queue_manager - INFO - Starting transcription queue processor
+2025-04-28 19:13:54,637 - queue_manager - INFO - Queue processor thread started
+2025-04-28 19:28:32,813 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-04-29 00:37:17,873 - queue_manager - INFO - Starting transcription queue processor
+2025-04-29 00:37:17,873 - queue_manager - INFO - Queue processor thread started
+2025-04-29 00:38:02,878 - queue_manager - INFO - Processing file f3406a5a-b353-45a7-9bcc-042c710a4688.wav (ID: 15)
+2025-04-29 00:42:34,390 - speechbrain.utils.quirks - INFO - Applied quirks (see `speechbrain.utils.quirks`): [disable_jit_profiling, allow_tf32]
+2025-04-29 00:42:34,390 - speechbrain.utils.quirks - INFO - Excluded quirks specified by the `SB_DISABLE_QUIRKS` environment (comma-separated list): []
+2025-04-29 00:46:40,668 - queue_manager - INFO - Successfully processed file f3406a5a-b353-45a7-9bcc-042c710a4688.wav
+2025-05-06 05:22:26,540 - queue_manager - INFO - Starting transcription queue processor
+2025-05-06 05:22:26,540 - queue_manager - INFO - Queue processor thread started
+2025-05-06 05:28:33,169 - queue_manager - INFO - Queue processor stopping (will complete current file)

@@ -74,6 +74,14 @@
         </div>
     </div>
     
+    {# ← Insert the brief here, before the full viewer ↓ #}
+    {% if brief_text %}
+    <section class="transcription-brief">
+        <h2>Brief Summary</h2>
+        <pre class="brief-content">{{ brief_text|safe }}</pre>
+    </section>
+  {% endif %}
+  {# ↑ end brief insertion ↑ #}
     {% if audio_file.status == 'transcribed' and audio_file.uploadedBy == user.serviceNo and user.isPilot %}
     <div class="submission-card">
         <div class="card-header">

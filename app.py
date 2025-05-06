@@ -201,6 +201,23 @@ async def view_transcription(
         available_flt_cdrs = get_flight_commanders_for_unit(user["unit"])
         available_cos = get_commanding_officers_for_unit(user["unit"])
     
+      # Try to load the brief summary alongside the .srt
+    # initialize so it's always defined
+    brief_text = None
+
+    # Try to load the brief summary alongside the .srt
+    srt_fn = transcription.get("srtFilename")
+    print("SRT filename is:", srt_fn)
+    if srt_fn:
+        base, _ = os.path.splitext(srt_fn)
+        brief_name = base + "_brief.txt"
+        print("Brief name is:", brief_name)
+        brief_path = os.path.join(UPLOAD_DIR, brief_name)
+        if os.path.exists(brief_path):
+            with open(brief_path, "r", encoding="utf-8") as bf:
+                brief_text = bf.read()
+
+    print("Brief text:", brief_text)
     # Return transcription view
     return templates.TemplateResponse(
         "view_transcription.html", 
@@ -210,7 +227,8 @@ async def view_transcription(
             "audio_file": audio_file,
             "transcription": transcription,
             "available_flt_cdrs": available_flt_cdrs,
-            "available_cos": available_cos
+            "available_cos": available_cos,
+            "brief_text": brief_text
         }
     )
 
