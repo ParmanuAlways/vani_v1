@@ -1906,6 +1906,7 @@ textarea.form-control {
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    border: 1px solid transparent;
 }
 
 .stat-card.filterable::before {
@@ -1920,31 +1921,118 @@ textarea.form-control {
     z-index: 0;
 }
 
+/* Hover state with more distinct colors */
 .stat-card.filterable:hover {
     transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-color);
+    background-color: var(--card-header-bg);
+}
+
+/* Clicking animation */
+.stat-card.clicking {
+    transform: scale(0.97) translateY(-3px);
+    transition: transform 0.1s ease;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
 }
 
 .stat-card.filterable:hover::before {
-    background: linear-gradient(135deg, rgba(79, 140, 255, 0.05) 0%, rgba(79, 140, 255, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(79, 140, 255, 0.1) 0%, rgba(79, 140, 255, 0.2) 100%);
 }
 
 .stat-card.filterable:hover .stat-icon {
     transform: scale(1.1);
+    color: var(--primary-color);
+}
+
+.stat-card.filterable:hover .stat-value {
+    color: var(--primary-color);
 }
 
 .stat-card.filterable .stat-icon {
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-/* Active filter state */
+.stat-card.filterable .stat-value {
+    transition: color 0.3s ease;
+}
+
+/* Active filter state - more pronounced */
 .stat-card.active-filter {
-    border-left: 3px solid var(--primary-color);
-    background: linear-gradient(to right, rgba(79, 140, 255, 0.1) 0%, var(--card-bg) 100%);
+    border: 1px solid var(--primary-color);
+    border-left: 4px solid var(--primary-color);
+    background: linear-gradient(to right, rgba(79, 140, 255, 0.15) 0%, rgba(79, 140, 255, 0.05) 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(79, 140, 255, 0.2);
+    animation: pulse 1.5s infinite alternate;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 8px 15px rgba(79, 140, 255, 0.2);
+    }
+    100% {
+        box-shadow: 0 8px 20px rgba(79, 140, 255, 0.4);
+    }
 }
 
 .stat-card.active-filter .stat-icon {
     color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.stat-card.active-filter .stat-value {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+/* Different colors for different stat cards */
+.stat-card:nth-child(1):hover,
+.stat-card:nth-child(1).active-filter {
+    border-color: var(--info-color);
+}
+
+.stat-card:nth-child(1):hover .stat-icon,
+.stat-card:nth-child(1).active-filter .stat-icon,
+.stat-card:nth-child(1):hover .stat-value,
+.stat-card:nth-child(1).active-filter .stat-value {
+    color: var(--info-color);
+}
+
+.stat-card:nth-child(2):hover,
+.stat-card:nth-child(2).active-filter {
+    border-color: var(--warning-color);
+}
+
+.stat-card:nth-child(2):hover .stat-icon,
+.stat-card:nth-child(2).active-filter .stat-icon,
+.stat-card:nth-child(2):hover .stat-value,
+.stat-card:nth-child(2).active-filter .stat-value {
+    color: var(--warning-color);
+}
+
+.stat-card:nth-child(3):hover,
+.stat-card:nth-child(3).active-filter {
+    border-color: var(--success-color);
+}
+
+.stat-card:nth-child(3):hover .stat-icon,
+.stat-card:nth-child(3).active-filter .stat-icon,
+.stat-card:nth-child(3):hover .stat-value,
+.stat-card:nth-child(3).active-filter .stat-value {
+    color: var(--success-color);
+}
+
+.stat-card:nth-child(4):hover,
+.stat-card:nth-child(4).active-filter {
+    border-color: var(--error-color);
+}
+
+.stat-card:nth-child(4):hover .stat-icon,
+.stat-card:nth-child(4).active-filter .stat-icon,
+.stat-card:nth-child(4):hover .stat-value,
+.stat-card:nth-child(4).active-filter .stat-value {
+    color: var(--error-color);
 }
 
 /* Filter indicator banner */
@@ -1958,6 +2046,22 @@ textarea.form-control {
     align-items: center;
     border-left: 3px solid var(--primary-color);
     animation: slideDown 0.3s ease-out;
+}
+
+/* Color variations for filter indicator based on filter type */
+.filter-indicator.pending {
+    background-color: rgba(243, 156, 18, 0.1);
+    border-left-color: var(--warning-color);
+}
+
+.filter-indicator.approved {
+    background-color: rgba(46, 204, 113, 0.1);
+    border-left-color: var(--success-color);
+}
+
+.filter-indicator.rejected {
+    background-color: rgba(231, 76, 60, 0.1);
+    border-left-color: var(--error-color);
 }
 
 @keyframes slideDown {

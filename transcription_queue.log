@@ -305,3 +305,20 @@
 2025-05-07 03:43:09,160 - queue_manager - INFO - Queue processor stopping (will complete current file)
 2025-05-07 03:43:31,095 - queue_manager - INFO - Starting transcription queue processor
 2025-05-07 03:43:31,095 - queue_manager - INFO - Queue processor thread started
+2025-05-07 04:02:55,796 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-07 04:03:15,535 - queue_manager - INFO - Starting transcription queue processor
+2025-05-07 04:03:15,535 - queue_manager - INFO - Queue processor thread started
+2025-05-07 04:12:25,579 - queue_manager - INFO - Processing file 9541f0db-d651-4cfb-8e28-09f35cf30cec.wav (ID: 16)
+2025-05-07 04:13:00,976 - speechbrain.utils.quirks - INFO - Applied quirks (see `speechbrain.utils.quirks`): [allow_tf32, disable_jit_profiling]
+2025-05-07 04:13:00,976 - speechbrain.utils.quirks - INFO - Excluded quirks specified by the `SB_DISABLE_QUIRKS` environment (comma-separated list): []
+2025-05-07 04:13:18,236 - queue_manager - INFO - Successfully processed file 9541f0db-d651-4cfb-8e28-09f35cf30cec.wav
+2025-05-07 04:21:38,278 - queue_manager - INFO - Processing file 3d1cf0a2-f23a-4d62-9742-c34b98a8ea0e.wav (ID: 17)
+2025-05-07 04:22:06,608 - queue_manager - INFO - Successfully processed file 3d1cf0a2-f23a-4d62-9742-c34b98a8ea0e.wav
+2025-05-07 04:36:16,681 - queue_manager - INFO - Processing file fd87f09a-2a84-4cb0-8c1d-eedf3744baa6.wav (ID: 18)
+2025-05-07 04:37:10,058 - queue_manager - INFO - Successfully processed file fd87f09a-2a84-4cb0-8c1d-eedf3744baa6.wav
+2025-05-07 04:41:00,077 - queue_manager - INFO - Processing file dd421f0f-d4dc-4619-a541-b2263b94080a.wav (ID: 19)
+2025-05-07 04:41:17,757 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-07 04:41:39,192 - queue_manager - INFO - Starting transcription queue processor
+2025-05-07 04:41:39,192 - queue_manager - INFO - Queue processor thread started
+2025-05-07 04:53:11,434 - queue_manager - INFO - Starting transcription queue processor
+2025-05-07 04:53:11,434 - queue_manager - INFO - Queue processor thread started

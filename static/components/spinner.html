@@ -1,0 +1,413 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Military Audio Transcription Loader</title>
+    <style>
+        body {
+            background: radial-gradient(circle at center, #2e2e2e, #1a1a1a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        .transcription-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 0, 0.5));
+        }
+
+        .transcription-core {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #6b8e23, #4a7043);
+            border-radius: 50%;
+            border: 4px solid #2e2e2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            animation: pulseCore 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseCore {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); }
+            50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(0, 255, 0, 1); }
+        }
+
+        .wave-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 8px solid transparent;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #4a7043 0% 10%,
+                transparent 10% 100%
+            );
+            animation: spinWave 2s linear infinite;
+        }
+
+        .wave-ring:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            animation: spinWaveReverse 1.8s linear infinite;
+            background: conic-gradient(
+                from 0deg,
+                #6b8e23 0% 15%,
+                transparent 15% 100%
+            );
+        }
+
+        .wave-ring:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            animation: spinWave 1.5s linear infinite;
+            background: conic-gradient(
+                from 0deg,
+                #4a7043 0% 20%,
+                transparent 20% 100%
+            );
+        }
+
+        @keyframes spinWave {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes spinWaveReverse {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .transcription-container::before {
+            content: 'WORKING';
+            position: absolute;
+            top: -40px;
+            color: #4a7043;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #6b8e23, 1px 1px 2px #000000;
+            animation: flicker 2.5s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .audio-spark {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #6b8e23;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #4a7043;
+            animation: sparkMove 3s linear infinite;
+        }
+
+        .audio-spark:nth-child(4) {
+            animation-delay: 0.5s;
+        }
+
+        .audio-spark:nth-child(5) {
+            animation-delay: 1s;
+        }
+
+        @keyframes sparkMove {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            50% { transform: translate(100px, 50px) scale(1.5); opacity: 0.8; }
+            100% { transform: translate(0, 0) scale(1); opacity: 1; }
+        }
+
+        .sound-wave {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(74, 112, 67, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: soundWave 5s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes soundWave {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="transcription-container">
+        <div class="sound-wave"></div>
+        <div class="wave-ring"></div>
+        <div class="wave-ring"></div>
+        <div class="wave-ring"></div>
+        <div class="audio-spark"></div>
+        <div class="audio-spark"></div>
+        <div class="audio-spark"></div>
+        <div class="transcription-core">VANI</div>
+    </div>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Military Audio Transcription Loader with Flares</title>
+    <style>
+        body {
+            background: radial-gradient(circle at center, #2e2e2e, #1a1a1a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            position: relative;
+        }
+
+        .transcription-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 0, 0.5));
+        }
+
+        .transcription-core {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #6b8e23, #4a7043);
+            border-radius: 50%;
+            border: 4px solid #2e2e2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            animation: pulseCore 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseCore {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); }
+            50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(0, 255, 0, 1); }
+        }
+
+        .wave-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 8px solid transparent;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #4a7043 0% 10%,
+                transparent 10% 100%
+            );
+            animation: spinWave 2s linear infinite;
+        }
+
+        .wave-ring:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            animation: spinWaveReverse 1.8s linear infinite;
+            background: conic-gradient(
+                from 0deg,
+                #6b8e23 0% 15%,
+                transparent 15% 100%
+            );
+        }
+
+        .wave-ring:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            animation: spinWave 1.5s linear infinite;
+            background: conic-gradient(
+                from 0deg,
+                #4a7043 0% 20%,
+                transparent 20% 100%
+            );
+        }
+
+        @keyframes spinWave {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes spinWaveReverse {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .transcription-container::before {
+            content: 'AUDIO TRANSCRIBING';
+            position: absolute;
+            top: -40px;
+            color: #4a7043;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #6b8e23, 1px 1px 2px #000000;
+            animation: flicker 2.5s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .audio-spark {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #6b8e23;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #4a7043;
+            animation: sparkMove 3s linear infinite;
+        }
+
+        .audio-spark:nth-child(4) {
+            animation-delay: 0.5s;
+        }
+
+        .audio-spark:nth-child(5) {
+            animation-delay: 1s;
+        }
+
+        @keyframes sparkMove {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            50% { transform: translate(100px, 50px) scale(1.5); opacity: 0.8; }
+            100% { transform: translate(0, 0) scale(1); opacity: 1; }
+        }
+
+        .sound-wave {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(74, 112, 67, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: soundWave 5s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes soundWave {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .flare {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: radial-gradient(circle, #6b8e23, transparent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: flareMove 2s linear infinite;
+            z-index: 0;
+        }
+
+        .flare:nth-child(6) {
+            animation-delay: 0.3s;
+        }
+
+        .flare:nth-child(7) {
+            animation-delay: 0.6s;
+        }
+
+        .flare:nth-child(8) {
+            animation-delay: 0.9s;
+        }
+
+        @keyframes flareMove {
+            0% { transform: translate(0, 0); opacity: 0; }
+            50% { transform: translate(300px, 0); opacity: 0.7; }
+            100% { transform: translate(450px, 0); opacity: 0; }
+        }
+
+        .transcription-text {
+            max-width: 400px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: normal;
+            text-align: left;
+            line-height: 1.6;
+            background: #2e2e2e;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #4a7043;
+            position: relative;
+            z-index: 1;
+        }
+
+        .transcription-text ul {
+            list-style-type: disc;
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .transcription-text li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="transcription-container">
+            <div class="sound-wave"></div>
+            <div class="wave-ring"></div>
+            <div class="wave-ring"></div>
+            <div class="wave-ring"></div>
+            <div class="audio-spark"></div>
+            <div class="audio-spark"></div>
+            <div class="audio-spark"></div>
+            <div class="flare"></div>
+            <div class="flare"></div>
+            <div class="flare"></div>
+            <div class="transcription-core">VANI</div>
+        </div>
+        <div class="transcription-text">
+            <ul>
+                <li>File processing in progress</li>
+                <li>Transcribing audio and identifying speakers</li>
+                <li>May take minutes based on file size</li>
+                <li>Keep window open; check back later</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -13,16 +13,19 @@
     <h2>File Processing</h2>
     
     <div class="status-container processing">
-        <div class="status-icon">
-            <div class="spinner"></div>
-        </div>
+       
+            <!-- <div class="spinner"></div> -->
+             <!-- <iframe src="/static/components/spinner.html" width="100%" height="100%" frameborder="0" ></iframe> -->
+             <iframe src="/static/components/spinner.html?filename={{ audio_file.originalFilename | urlencode }}&uploadDate={{ audio_file.uploadDate | urlencode }}" 
+             style="width: 100%; height: 500px; border: none; overflow: hidden; background: transparent; margin: 0; padding: 0;" 
+             frameborder="0" allowtransparency="true">
+            </iframe>
+
+      
         
-        <div class="status-details">
-            <h3>Your file is currently being processed</h3>
-            <p>The system is transcribing your audio and identifying different speakers.</p>
-            <p>This may take several minutes depending on the file size and complexity.</p>
-            <p>Please do not close this window. You can check back later to see if processing has completed.</p>
-        </div>
+        
+        
+        
     </div>
     
     <div class="processing-info">
@@ -79,7 +82,7 @@
     .status-container {
         display: flex;
         align-items: center;
-        background-color: #f0f7ff;
+        background-color: #1a1a1a;
         padding: 20px;
         border-radius: var(--border-radius);
         margin-bottom: 30px;
@@ -100,6 +103,11 @@
     .status-details h3 {
         margin-top: 0;
         color: var(--secondary-color);
+        
+    }
+    .status-details p {
+        margin: 5px 0;
+        color: #107906;
     }
 </style>
 {% endblock %}

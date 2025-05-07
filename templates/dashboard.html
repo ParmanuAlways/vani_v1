@@ -534,6 +534,17 @@
         // Add hover effect class
         card.classList.add('filterable');
         
+        // Add click animation
+        card.addEventListener('mousedown', function() {
+            this.classList.add('clicking');
+        });
+        
+        document.addEventListener('mouseup', function() {
+            document.querySelectorAll('.stat-card.clicking').forEach(c => {
+                c.classList.remove('clicking');
+            });
+        });
+        
         card.addEventListener('click', function() {
             // Determine which status to filter by based on the stat card
             const statLabel = this.querySelector('.stat-label').textContent.trim();
@@ -601,6 +612,16 @@
         const indicator = document.createElement('div');
         indicator.id = 'filter-indicator';
         indicator.className = 'filter-indicator';
+        
+        // Add appropriate class based on filter type
+        if (label === 'Pending Approval') {
+            indicator.classList.add('pending');
+        } else if (label === 'Approved') {
+            indicator.classList.add('approved');
+        } else if (label === 'Rejected') {
+            indicator.classList.add('rejected');
+        }
+        
         indicator.innerHTML = `
             <span>Showing: <strong>${label}</strong></span>
             <button class="clear-filter" title="Clear filter"><i class="fas fa-times"></i></button>
@@ -655,7 +676,7 @@
     // Call updateCounts on page load
     updateCounts();
 
-
+        
     });
 </script>
 {% endblock %}
