@@ -498,6 +498,135 @@
             });
         }
     
+        // const fileCards = document.querySelectorAll('.file-card');
+        // let pendingCount = 0;
+        // let approvedCount = 0;
+        // let rejectedCount = 0;
+        
+        // fileCards.forEach(card => {
+        //     const status = card.dataset.status;
+            
+        //     // Use the same logic as the working filters
+        //     if (status === 'submitted_fltcdr' || status === 'submitted_co' || 
+        //         status.includes('submitted')) {
+        //         pendingCount++;
+        //     } else if (status === 'approved_fltcdr' || status === 'approved_co' || 
+        //                status.includes('approved')) {
+        //         approvedCount++;
+        //     } else if (status === 'rejected') {
+        //         rejectedCount++;
+        //     }
+        // });
+        
+        // // Update the stat values
+        // document.getElementById('pending-count').textContent = pendingCount;
+        // document.getElementById('approved-count').textContent = approvedCount;
+        // document.getElementById('rejected-count').textContent = rejectedCount;
+
+        // Make stat cards clickable for filtering
+    const statCards = document.querySelectorAll('.stat-card');
+    
+    // Add click event listener to each stat card
+    statCards.forEach(card => {
+        // Add visual cue that cards are clickable
+        card.style.cursor = 'pointer';
+        
+        // Add hover effect class
+        card.classList.add('filterable');
+        
+        card.addEventListener('click', function() {
+            // Determine which status to filter by based on the stat card
+            const statLabel = this.querySelector('.stat-label').textContent.trim();
+            let filterStatus;
+            
+            switch(statLabel) {
+                case 'Pending Approval':
+                    filterStatus = ['submitted_fltcdr', 'submitted_co'];
+                    break;
+                case 'Approved':
+                    filterStatus = ['approved_fltcdr', 'approved_co'];
+                    break;
+                case 'Rejected':
+                    filterStatus = ['rejected'];
+                    break;
+                default:
+                    filterStatus = null; // Show all files if clicking "Total Uploads"
+                    break;
+            }
+            
+            // Remove active class from all stat cards
+            statCards.forEach(c => c.classList.remove('active-filter'));
+            
+            // Add active class to clicked card if filtering
+            if (filterStatus) {
+                this.classList.add('active-filter');
+            }
+            
+            // Apply the filter
+            filterFileCards(filterStatus);
+            
+            // Show visual feedback
+            showFilterFeedback(statLabel, filterStatus === null);
+        });
+    });
+    
+    // Function to filter file cards based on status
+    function filterFileCards(statusArray) {
+        const fileCards = document.querySelectorAll('.file-card');
+        
+        fileCards.forEach(card => {
+            // If no filter (null) or status matches any in the array, show the card
+            if (!statusArray || statusArray.some(status => card.dataset.status.includes(status))) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    // Function to show visual feedback about current filter
+    function showFilterFeedback(label, isShowingAll) {
+        // Remove any existing filter indicator
+        const existingIndicator = document.getElementById('filter-indicator');
+        if (existingIndicator) {
+            existingIndicator.remove();
+        }
+        
+        // If we're showing all files, don't show an indicator
+        if (isShowingAll) {
+            return;
+        }
+        
+        // Create filter indicator
+        const indicator = document.createElement('div');
+        indicator.id = 'filter-indicator';
+        indicator.className = 'filter-indicator';
+        indicator.innerHTML = `
+            <span>Showing: <strong>${label}</strong></span>
+            <button class="clear-filter" title="Clear filter"><i class="fas fa-times"></i></button>
+        `;
+        
+        // Insert after the overview stats section
+        const overviewStats = document.querySelector('.overview-stats');
+        overviewStats.insertAdjacentElement('afterend', indicator);
+        
+        // Add event listener to clear filter button
+        indicator.querySelector('.clear-filter').addEventListener('click', function() {
+            // Show all file cards
+            document.querySelectorAll('.file-card').forEach(card => {
+                card.style.display = '';
+            });
+            
+            // Remove active class from all stat cards
+            statCards.forEach(card => card.classList.remove('active-filter'));
+            
+            // Remove the indicator
+            indicator.remove();
+        });
+    }
+    
+    // Update counts in real-time based on visible file cards
+    function updateCounts() {
         const fileCards = document.querySelectorAll('.file-card');
         let pendingCount = 0;
         let approvedCount = 0;
@@ -506,7 +635,6 @@
         fileCards.forEach(card => {
             const status = card.dataset.status;
             
-            // Use the same logic as the working filters
             if (status === 'submitted_fltcdr' || status === 'submitted_co' || 
                 status.includes('submitted')) {
                 pendingCount++;
@@ -522,6 +650,12 @@
         document.getElementById('pending-count').textContent = pendingCount;
         document.getElementById('approved-count').textContent = approvedCount;
         document.getElementById('rejected-count').textContent = rejectedCount;
+    }
+    
+    // Call updateCounts on page load
+    updateCounts();
+
+
     });
 </script>
 {% endblock %}

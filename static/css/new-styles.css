@@ -1900,3 +1900,92 @@ textarea.form-control {
 .quote-container {
     z-index: 3;
 }
+
+/* Make stat cards visually clickable */
+.stat-card.filterable {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card.filterable::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(79, 140, 255, 0) 0%, rgba(79, 140, 255, 0) 100%);
+    transition: all 0.3s ease;
+    z-index: 0;
+}
+
+.stat-card.filterable:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-card.filterable:hover::before {
+    background: linear-gradient(135deg, rgba(79, 140, 255, 0.05) 0%, rgba(79, 140, 255, 0.1) 100%);
+}
+
+.stat-card.filterable:hover .stat-icon {
+    transform: scale(1.1);
+}
+
+.stat-card.filterable .stat-icon {
+    transition: transform 0.3s ease;
+}
+
+/* Active filter state */
+.stat-card.active-filter {
+    border-left: 3px solid var(--primary-color);
+    background: linear-gradient(to right, rgba(79, 140, 255, 0.1) 0%, var(--card-bg) 100%);
+}
+
+.stat-card.active-filter .stat-icon {
+    color: var(--primary-color);
+}
+
+/* Filter indicator banner */
+.filter-indicator {
+    background-color: rgba(79, 140, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 3px solid var(--primary-color);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.clear-filter {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.clear-filter:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+}

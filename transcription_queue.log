@@ -300,3 +300,8 @@
 2025-05-06 13:28:02,660 - queue_manager - INFO - Queue processor stopping (will complete current file)
 2025-05-06 13:28:23,019 - queue_manager - INFO - Starting transcription queue processor
 2025-05-06 13:28:23,019 - queue_manager - INFO - Queue processor thread started
+2025-05-07 02:50:16,273 - queue_manager - INFO - Starting transcription queue processor
+2025-05-07 02:50:16,273 - queue_manager - INFO - Queue processor thread started
+2025-05-07 03:43:09,160 - queue_manager - INFO - Queue processor stopping (will complete current file)
+2025-05-07 03:43:31,095 - queue_manager - INFO - Starting transcription queue processor
+2025-05-07 03:43:31,095 - queue_manager - INFO - Queue processor thread started
